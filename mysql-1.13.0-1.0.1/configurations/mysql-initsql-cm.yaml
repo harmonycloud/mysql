@@ -1,0 +1,17 @@
+apiVersion: middleware.cn/v1
+kind: MiddlewareConfiguration
+metadata:
+  name: mysql-initsql-cm
+spec:
+  template: |
+    {{- if .Values.init_at_setup.enabled }}
+    {{- if .Values.init_at_setup.init_sql }}
+    apiVersion: v1
+    data:
+      init.sql: |-
+    {{ .Values.init_at_setup.init_sql | indent 4 }}
+    kind: ConfigMap
+    metadata:
+      name: {{ .Globe.Name }}-init-sql-file
+    {{- end }}
+    {{- end }}

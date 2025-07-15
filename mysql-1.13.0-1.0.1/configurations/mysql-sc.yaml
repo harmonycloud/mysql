@@ -1,0 +1,18 @@
+apiVersion: middleware.cn/v1
+kind: MiddlewareConfiguration
+metadata:
+  name: mysql-sc
+spec:
+  template: |
+    {{- if  .Values.storageClassName }}
+    {{- if contains "," .Values.storageClassName  }}
+    apiVersion: v1
+    data:
+      storageclass.list: {{ .Values.storageClassName }}
+    kind: ConfigMap
+    metadata:
+      annotations:
+        statefulsetController: harmonycloud
+      name: {{ .Globe.Name }}-sc
+    {{- end }}
+    {{- end }}

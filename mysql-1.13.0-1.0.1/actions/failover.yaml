@@ -1,0 +1,68 @@
+apiVersion: middleware.cn/v1
+kind: MiddlewareActionBaseline
+metadata:
+  name: mysql-failover
+spec:
+  baselineType: "OpsAction"
+  actionType: "failover"
+  necessary:
+    namespace: "string"
+    middlewareName: "string"
+  steps:
+    - name: getSlaveNames
+      output:
+        type: "string"
+        expose: true
+      cmd:
+        command:
+          - "kubectl"
+          - "get"
+          - "mid"
+          - "-n"
+          - "{{ .Necessary.namespace }}"
+          - "{{ .Necessary.middlewareName }}"
+          - "-o"
+          - "jsonpath={.spec.customResources.include.pods[?(@.type==\"slave\")].name}"
+    - name: getSlaveName
+      output:
+        type: "string"
+        expose: true
+      cmd:
+        command:
+          - "echo"
+          - '"{{ .Step.getSlaveNames.output }}"'
+          - "|"
+          - "awk"
+          - '''{print $1}'''
+    - name: getSyncSlave
+      output:
+        type: "string"
+        expose: true
+      cmd:
+        command:
+          - "kubectl"
+          - "get"
+          - "mid"
+          - "-n"
+          - "{{ .Necessary.namespace }}"
+          - "{{ .Necessary.middlewareName }}"
+          - "-o"
+          - "jsonpath={.spec.customResources.include.pods[?(@.type==\"SyncSlave\")].name}"
+    - name: getVersion
+      output:
+        type: "string"
+        expose: true
+      cmd:
+        command:
+          - "kubectl"
+          - "get"
+          - "mid"
+          - "-n"
+          - "{{ .Necessary.namespace }}"
+          - "{{ .Necessary.middlewareName }}"
+          - "-o"
+          - "jsonpath={.spec.parameters.version}"
+    - name: failover
+      cmd:
+        command:
+          - "{{ if semverCompare '< 1.8.20' .Step.getVersion.output }}kubectl patch mc {{ .Necessary.middlewareName }} -n {{ .Necessary.namespace }} -type=merge -p {\"spec\":{\"clusterSwitch\":{\"switched\":false,\"finished\":false,\"master\":\"{{ .Step.getSlaveName.output }}\"}}} {{ else }} kubectl exec {{ .Step.getSyncSlave.output }} -n {{ .Necessary.namespace }} -c mysql -- bash -c \"curl -s -X POST -w '''\n%{http_code}\n''' http://mysql-operator.middleware-operator:8080/failover -d '''{\"candidate\": \"'{{ .Step.getSyncSlave.output }}'\",\"namespace\":\"'{{ .Necessary.namespace }}'\",\"name\":\"'{{ .Necessary.middlewareName }}'\"}'''\" {{ end }}"

@@ -1,0 +1,73 @@
+datadir="/var/lib/proxysql"
+
+admin_variables=
+{
+  admin_credentials="{{ .Values.proxy.args.adminUser | default "proxy_harmonycloud" }}:{{ .Values.proxy.args.adminPassword | default "Ab123456" }}"
+  mysql_ifaces="0.0.0.0:6032"
+  restapi_enabled=true
+  restapi_port=6070
+  prometheus_memory_metrics_interval=60
+}
+
+mysql_variables=
+{
+
+  monitor_username="{{ .Values.proxy.user | default "root"}}"
+  monitor_password="{{ .Values.args.root_password  | default "Hc@Cloud01"}}"
+
+  # value.yaml中int会转化float64，转为科学计数法，导致配置错误，需要强制将float64转为int类型
+  {{- range $k, $v := .Values.proxy.args }}
+  {{- if regexMatch "^mysql-" $k }}
+  {{- if eq (kindOf $v) "float64" }}
+  {{ regexReplaceAll "mysql-" $k ""}}={{int $v}}
+  {{- else }}
+  {{ regexReplaceAll "mysql-" $k ""}}="{{$v}}"
+  {{- end }}
+  {{- end }}
+  {{- end }}
+}
+
+{{ $name := include "mysql.fullname" . }}
+
+# defines all the MySQL servers
+mysql_servers =
+(
+{{ $replicas := int (toString .Values.replicaCount) }}
+{{ range $i := until $replicas }}
+  { address="{{ $name }}-{{$i}}.{{ $name }}-headless" , port={{ $.Values.args.server_port |default 3306 }} , hostgroup=1, max_connections=5000, max_replication_lag=20},
+{{end}}
+)
+
+
+# defines all the MySQL users
+mysql_users:
+(
+  { username = "{{ .Values.proxy.user | default "root"}}" , password = "{{ .Values.args.root_password  | default "Hc@Cloud01" }}"},
+)
+
+#defines MySQL Query Rules
+
+mysql_query_rules:
+{{ .Values.proxy.args.mysql_query_rules | indent 2}}
+
+
+scheduler=
+(
+  {
+    id=1
+    active=1
+    interval_ms={{ .Values.proxy.args.sync_user_period | default 600000 }}
+    filename="/tmp/proxysql/sync-user.sh"
+    comment="sync-user"
+  }
+)
+
+
+mysql_replication_hostgroups=
+(
+  {
+    writer_hostgroup=0
+    reader_hostgroup=1
+    comment="RHG1"
+  }
+)

@@ -1,0 +1,251 @@
+apiVersion: middleware.cn/v1
+kind: MiddlewareOperatorBaseline
+metadata:
+  name: mysql-operator-highly-available
+  annotations:
+    baselineName: "高可用版"
+    description: "高可用版基线,包含核心功能和必要依赖,适用于快速部署和基本应用场景,稳定可靠,易于扩展和维护."
+spec:
+  gvks:
+    - name: v1alpha1
+      group: "mysql.middleware.harmonycloud.cn"
+      version: "v1alpha1"
+      kind: "MysqlCluster"
+  globe:
+    repository: "10.10.101.172:443"
+    project: "middleware"
+    resource:
+      limits:
+        cpu: "500m"
+        memory: "500Mi"
+      requests:
+        cpu: "100m"
+        memory: "250Mi"
+    numberOfInstances: ""
+  preActions:
+    - name: pre-mysql-operator-affinity
+      parameters:
+        podAntiAffinityTopologKey: "kubernetes.io/hostname"
+        podAntiAffinity: "soft"
+        nodeAffinity: { }
+      exposed: true
+    - name: pre-mysql-operator-tolerations
+      parameters:
+        tolerations: [ ]
+      exposed: true
+  permissionScope: "Cluster"
+  permissions:
+    - serviceAccountName: "{{ .Globe.Name }}-mysql-operator"
+      rules:
+        - apiGroups:
+            - ""
+          resources:
+            - endpoints
+            - configmaps
+            - secrets
+          verbs:
+            - get
+            - list
+            - patch
+            - update
+            - watch
+            - create
+            - delete
+        - apiGroups:
+            - "coordination.k8s.io"
+          resources:
+            - leases
+          verbs:
+            - get
+            - list
+            - patch
+            - update
+            - watch
+            - create
+            - delete
+        - apiGroups:
+            - apps
+          resources:
+            - statefulsets
+            - deployments
+          verbs:
+            - get
+            - list
+            - patch
+            - update
+            - watch
+            - create
+        - apiGroups:
+            - mysql.middleware.harmonycloud.cn
+          resources:
+            - mysqlclusters
+            - mysqlbackups
+            - mysqlbackupschedules
+            - mysqlreplicates
+            - mysqlclusters/status
+            - mysqlreplicates/status
+          verbs:
+            - get
+            - list
+            - patch
+            - update
+            - watch
+            - create
+            - delete
+        - apiGroups:
+            - ""
+          resources:
+            - services
+          verbs:
+            - get
+            - list
+            - patch
+            - update
+            - watch
+            - create
+        - apiGroups:
+            - apps
+          resources:
+            - controllerrevisions
+          verbs:
+            - get
+            - list
+            - patch
+            - update
+            - watch
+            - create
+        - apiGroups:
+            - ""
+          resources:
+            - events
+          verbs:
+            - get
+            - list
+            - patch
+            - update
+            - watch
+            - create
+        - apiGroups:
+            - ""
+          resources:
+            - pods
+            - persistentvolumeclaims
+            - pods/log
+          verbs:
+            - get
+            - list
+            - patch
+            - update
+            - watch
+            - create
+            - delete
+        - apiGroups:
+            - "batch"
+          resources:
+            - jobs
+          verbs:
+            - get
+            - list
+            - patch
+            - update
+            - watch
+            - create
+        - apiGroups: [ "" ]
+          resources: [ "pods/exec" ]
+          verbs: [ "create" ]
+        - apiGroups: [ "" ]
+          resources: [ "persistentvolumes", "nodes" ]
+          verbs: [ "list", "watch", "update", "patch" ]
+  deployment:
+    spec:
+      replicas: "{{ .Necessary.numberOfInstances }}"
+      selector:
+        matchLabels:
+          app.kubernetes.io/name: mysql-operator
+          app.kubernetes.io/instance: "{{ .Globe.Name }}"
+      strategy:
+        rollingUpdate:
+          maxSurge: 25%
+          maxUnavailable: 25%
+        type: RollingUpdate
+      template:
+        metadata:
+          labels:
+            app.kubernetes.io/name: mysql-operator
+            app.kubernetes.io/instance: "{{ .Globe.Name }}"
+        spec:
+          securityContext:
+            { }
+          containers:
+            - name: mysql-operator
+              securityContext:
+                { }
+              image: '{{ if ne .Globe.repository "" }}{{ .Globe.repository }}/{{ end }}{{ .Globe.project }}/mysql-operator:v1.13.0'
+              command:
+                - /manager
+                - --v=5
+                - --enable-leader-election=true
+                - --health-addr=:10880
+                - --operatorpwd=abcd!@#$
+                - --replicapwd=abcd!@#$
+                - --sshpwd=abcd!@#$
+                - --mysqlUserHost=%
+                - --operatorname=mysql-operator
+                - --updateStrategy=OnDelete
+              imagePullPolicy: IfNotPresent
+              env:
+                - name: TZ
+                  value: "Asia/Shanghai"
+                - name: CRD_GROUP
+                  value: harmonycloud
+                - name: aliyun_logs_middlewarestdout
+                  value: stdout
+                - name: aliyun_logs_middlewarestdout_tags
+                  value: "middleware_name={{ .Globe.Name }}"
+                - name: TOOLBOOX_IMAGE
+                  value: '{{ if ne .Globe.repository "" }}{{ .Globe.repository }}/{{ end }}{{ .Globe.project }}/mysql-toolbox:v1.1.0'
+              ports:
+                - name: http
+                  containerPort: 8080
+                  protocol: TCP
+              livenessProbe:
+                failureThreshold: 3
+                httpGet:
+                  path: /healthz
+                  port: 10880
+                  scheme: HTTP
+                initialDelaySeconds: 120
+                periodSeconds: 5
+                successThreshold: 1
+                timeoutSeconds: 5
+              resources:
+                limits:
+                  cpu: '"{{ .Globe.resource.limits.cpu }}"'
+                  memory: '"{{ .Globe.resource.limits.memory }}"'
+                requests:
+                  cpu: '"{{ .Globe.resource.requests.cpu }}"'
+                  memory: '"{{ .Globe.resource.requests.memory }}"'
+              volumeMounts:
+                - mountPath: /resource/proxysql-cluster/templates/
+                  name: resource
+          volumes:
+            - name: resource
+              configMap:
+                name: "{{ .Globe.Name }}-mysql-operator-resource"
+          serviceAccount: "{{ .Globe.Name }}-mysql-operator"
+  configurations:
+    - name: "crd-mysqlbackup"
+      values: { }
+    - name: "crd-mysqlbackupschedules"
+      values: { }
+    - name: "crd-mysqlcluster"
+      values: { }
+    - name: "crd-mysqlreplicates"
+      values: { }
+    - name: "mysql-operator-alertrule"
+      values: { }
+    - name: "mysql-operator-configmap"
+      values: {}
+    - name: "mysql-operator-dashboard-configmap"
+      values: {}
+

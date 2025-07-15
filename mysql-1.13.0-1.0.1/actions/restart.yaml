@@ -1,0 +1,40 @@
+apiVersion: middleware.cn/v1
+kind: MiddlewareActionBaseline
+metadata:
+  name: mysql-restart
+spec:
+  baselineType: "NormalAction"
+  actionType: "restart"
+  necessary:
+    namespace: "string"
+    middlewareName: "string"
+  steps:
+    - name: isProxy
+      output:
+        type: "string"
+        expose: true
+      cmd:
+        command:
+          - "kubectl"
+          - "get"
+          - "mid"
+          - "-n"
+          - "{{ .Necessary.namespace }}"
+          - "{{ .Necessary.middlewareName }}"
+          - "-o"
+          - "jsonpath=''{.spec.proxy}''"
+          - "|"
+          - "awk"
+          - '''/enable/ {found=1; exit} END {if (found) print "proxy"; else print ""}'''
+    - name: restart
+      cmd:
+        command:
+          - "kubectl"
+          - "patch"
+          - "redisCluster"
+          - "{{ .Necessary.middlewareName }}"
+          - "-n"
+          - "{{ .Necessary.namespace }}"
+          - "--type=merge"
+          - "-p"
+          - '''{"metadata":{"annotations":{"middleware.maintenance.lock":"graceful-restart",{{ if eq .Step.isProxy.output "proxy" }}"middleware.maintenance.component":"proxysql"{{ end }}}}}'''

@@ -1,0 +1,83 @@
+apiVersion: middleware.cn/v1
+kind: MiddlewareActionBaseline
+metadata:
+  name: pre-mysql-logging
+spec:
+  baselineType: "PreAction"
+  actionType: "pre-logging"
+  necessary:
+    fileLogging: "bool"
+    stdoutLogging: "bool"
+    auditLogging: "bool"
+    slowqueryLogging: "bool"
+  steps:
+    - name: logging
+      type: "KubectlEdit" # KubectlGet、KubectlEdit、KubectlExec、Exec、HTTP
+      cue: |
+        output: {
+          spec: parameters.spec
+        }
+        parameters: {
+          spec: {
+            parameters: {
+              statefulset: {
+                env: {
+                  {{- if .Necessary.slowqueryLogging }}
+                  {
+                    name: "aliyun_logs_mysqlslow"
+                    value: "/data/mysql/db_{{ .Globe.Name }}/elog/slow.log"
+                  },
+                  {
+                    name: "aliyun_logs_mysqlslow_format"
+                    value: "mysql_slow_log"
+                  },
+                  {
+                    name: "aliyun_logs_mysqlslow_tags"
+                    value: "middleware_name={{ .Globe.Name }}"
+                  },
+                  {{ end }}
+                  {{- if .Necessary.auditLogging }}
+                  {
+                    name: "aliyun_logs_mysqlaudit"
+                    value: "/data/mysql/db_{{ .Globe.Name }}/elog/mysql-audit.json"
+                  },
+                  {
+                    name: "aliyun_logs_mysqlaudit_format"
+                    value: "json"
+                  },
+                  {
+                    name: "aliyun_logs_mysqlaudit_tags"
+                    value: "middleware_name={{ .Globe.Name }}"
+                  },
+                  {{ end }}
+                  {{- if .Necessary.stdoutLogging }}
+                  {
+                    name: "aliyun_logs_middlewarestdout"
+                    value: "stdout"
+                  },
+                  {
+                    name: "aliyun_logs_middlewarestdout_tags"
+                    value: "middleware_name={{ .Globe.Name }}"
+                  },
+                  {{ end }}
+                  {{- if .Necessary.fileLogging }}
+                  {
+                    name: "aliyun_logs_middlewarelogstash"
+                    value: "/data/mysql/db_{{ .Globe.Name }}/elog/*.err"
+                  },
+                  {
+                    name: "aliyun_logs_middlewarelogstash_tags"
+                    value: "middleware_name={{ .Globe.Name }}"
+                  },
+                  {{ end }}
+                }
+              }
+            }
+          }
+          resource: {
+            apiversion: "middleware.cn/v1"
+            kind: "Middleware"
+            name: "{{ .Globe.Name }}"
+            namespace: "{{ .Globe.Namespace }}"
+          }
+        }

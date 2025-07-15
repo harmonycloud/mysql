@@ -1,0 +1,205 @@
+apiVersion: mysql.middleware.harmonycloud.cn/v1alpha1
+kind: MysqlCluster
+metadata:
+  name: {{ include "mysql.fullname" . }}
+  labels:
+    operatorname: mysql-operator
+spec:
+  {{- if .Values.proxy.enable }}
+  proxy:
+    enable: {{ .Values.proxy.enable }}
+    replicaCount: {{ .Values.proxy.replicaCount }}
+    {{- with .Values.proxy.resources }}
+    resources:
+    {{- toYaml . | nindent 6 }}
+    {{- end }}
+    {{- with .Values.proxy.strategy }}
+    strategy:
+    {{- toYaml . | nindent 6 }}
+    {{- end }}
+    {{- with .Values.proxy.securityContext }}
+    securityContext:
+    {{- toYaml . | nindent 6 }}
+    {{- end }}
+    image:
+      repository: {{ .Values.image.repository }}/proxysql
+      tag: {{ .Values.image.proxyImageTag}}
+      pullPolicy: {{ .Values.image.pullPolicy}}
+    {{- with .Values.proxy.args }}
+    args:
+    {{- toYaml . | nindent 6 }}
+    {{- end }}
+  {{- /*拓扑策略*/ -}}
+  {{- include "middlware.proxy.topologyDistribution" . | indent 4 -}}
+  {{- end }}
+  _statefulset:
+    spec:
+      template:
+        spec:
+        {{- /*拓扑策略*/ -}}
+        {{- include "middlware.topologyDistribution" . | indent 10 -}}
+        {{- with .Values.statefulSetConfiguration }}
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+{{- if .Values.init_at_setup.enabled }}
+  initScriptCMName: {{ include "mysql.fullname" . }}-init-sql-file
+{{- end }}
+  clusterSwitch:
+    switched: false
+  cmName: {{ include "mysql.fullname" . }}-config
+  businessDeploy:
+{{- toYaml .Values.businessDeploy | nindent 4 }}
+  deployStrategy:
+    basicConfig: {}
+    migration: {}
+    type: AutoDeploy
+  migratePolicy: {}
+  replicas: {{ .Values.replicaCount }}
+  repository: {{ .Values.image.repository }}/mysql-cluster
+  secretName: mysql-secret
+  statefulset:
+    {{- /*------先保留, 新版本不采用------*/ -}}
+    {{- if eq (semverCompare ">= 1.19-0" .Capabilities.KubeVersion.Version) false }}
+    {{- with .Values.tolerations }}
+    tolerations:
+        {{- toYaml . | nindent 8 }}
+    {{- end}}
+    affinity:
+    {{- if eq .Values.podAntiAffinity "hard"}}
+      podAntiAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+        - labelSelector:
+            matchExpressions:
+            - key: app
+              operator: In
+              values:
+              - {{ include "mysql.fullname" . }}
+          topologyKey: {{ .Values.podAntiAffinityTopologKey }}
+    {{- else if eq .Values.podAntiAffinity "soft"}}
+      podAntiAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 100
+          podAffinityTerm:
+            topologyKey: {{ .Values.podAntiAffinityTopologKey }}
+            labelSelector:
+              matchExpressions:
+              - key: app
+                operator: In
+                values:
+                - {{ include "mysql.fullname" . }}
+    {{- end}}
+      {{- with .Values.nodeAffinity }}
+      nodeAffinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    {{- end }}
+    configmap: {{ include "mysql.fullname" . }}-config
+    env:
+    - name: DBNAME
+      value: {{ include "mysql.fullname" . }}
+    - name: MYSQL_ROOT_PASSWORD
+      value: {{ .Values.args.root_password | quote}}
+    - name: MYSQL_USER_HOST
+      value: "%"
+    - name: MYSQL_ROOT_HOST
+      value: "%"
+  {{- if eq .Values.args.slow_query_log "ON" }}
+    - name: aliyun_logs_mysqlslow
+      value: /data/mysql/db_{{ include "mysql.fullname" . }}/elog/slow.log
+    - name: aliyun_logs_mysqlslow_format
+      value: mysql_slow_log
+    - name: aliyun_logs_mysqlslow_tags
+      value: middleware_name={{ include "mysql.fullname" . }}
+  {{- end}}
+  {{- if .Values.features.auditLog.enabled }}
+    - name: aliyun_logs_mysqlaudit
+      value: /data/mysql/db_{{ include "mysql.fullname" . }}/elog/mysql-audit.json
+    - name: aliyun_logs_mysqlaudit_format
+      value: json
+    - name: aliyun_logs_mysqlaudit_tags
+      value: middleware_name={{ include "mysql.fullname" . }}
+  {{- end}}
+  {{- if ((((.Values.logging).collection).stdout).enabled)}}
+    - name: aliyun_logs_middlewarestdout
+      value: stdout
+    - name: aliyun_logs_middlewarestdout_tags
+      value: middleware_name={{ include "mysql.fullname" . }}
+  {{- end}}
+  {{- if ((((.Values.logging).collection).filelog).enabled)}}
+    - name: aliyun_logs_middlewarelogstash
+      value: /data/mysql/db_{{ include "mysql.fullname" . }}/elog/*.err
+    - name: aliyun_logs_middlewarelogstash_tags
+      value: middleware_name={{ include "mysql.fullname" . }}
+  {{- end}}
+  {{- if .Values.ssh.enabled }}
+    - name: SSH_ENABLE
+      value: "true"
+  {{- end }}
+  {{- if eq .Values.version "8.0" }}
+    initImage: {{ .Values.image.repository }}/mysql-init:{{ .Values.image.initImageTag_8}}
+    middlewareImage: {{ .Values.image.repository }}/mysql-cluster:{{ .Values.image.middlewareImageTag_8_0_26}}
+    backupRestoreImage: {{ .Values.image.repository }}/mysql-xtrabackup:{{ .Values.image.backupRestoreImageTag_8}}
+  {{- else if eq .Values.version "8.0.26" }}
+    initImage: {{ .Values.image.repository }}/mysql-init:{{ .Values.image.initImageTag_8}}
+    middlewareImage: {{ .Values.image.repository }}/mysql-cluster:{{ .Values.image.middlewareImageTag_8_0_26}}
+    backupRestoreImage: {{ .Values.image.repository }}/mysql-xtrabackup:{{ .Values.image.backupRestoreImageTag_8}}
+  {{- else if eq .Values.version "8.0.31" }}
+    initImage: {{ .Values.image.repository }}/mysql-init:{{ .Values.image.initImageTag_8}}
+    middlewareImage: {{ .Values.image.repository }}/mysql-cluster:{{ .Values.image.middlewareImageTag_8_0_31}}
+    backupRestoreImage: {{ .Values.image.repository }}/mysql-xtrabackup:{{ .Values.image.backupRestoreImageTag_8}}
+  {{- else if eq .Values.version "8.0.39" }}
+    initImage: {{ .Values.image.repository }}/mysql-init:{{ .Values.image.initImageTag_8}}
+    middlewareImage: {{ .Values.image.repository }}/mysql-cluster:{{ .Values.image.middlewareImageTag_8_0_39}}
+    backupRestoreImage: {{ .Values.image.repository }}/mysql-xtrabackup:{{ .Values.image.backupRestoreImageTag_8}}
+  {{- else if eq .Values.version "5.7.39" }}
+    initImage: {{ .Values.image.repository }}/mysql-init:{{ .Values.image.initImageTag}}
+    middlewareImage: {{ .Values.image.repository }}/mysql-cluster:{{ .Values.image.middlewareImageTag_5_7_39}}
+    backupRestoreImage: {{ .Values.image.repository }}/mysql-xtrabackup:{{ .Values.image.backupRestoreImageTag}}
+  {{- else if eq .Values.version "5.7.44" }}
+    initImage: {{ .Values.image.repository }}/mysql-init:{{ .Values.image.initImageTag}}
+    middlewareImage: {{ .Values.image.repository }}/mysql-cluster:{{ .Values.image.middlewareImageTag_5_7_44}}
+    backupRestoreImage: {{ .Values.image.repository }}/mysql-xtrabackup:{{ .Values.image.backupRestoreImageTag}}
+  {{- else }}
+    initImage: {{ .Values.image.repository }}/mysql-init:{{ .Values.image.initImageTag}}
+    middlewareImage: {{ .Values.image.repository }}/mysql-cluster:{{ .Values.image.middlewareImageTag_5_7_35}}
+    backupRestoreImage: {{ .Values.image.repository }}/mysql-xtrabackup:{{ .Values.image.backupRestoreImageTag}}
+  {{- end }}
+    monitorImage: {{ .Values.image.repository }}/mysqld-exporter:{{ .Values.image.monitorImageTag}}
+    logrotateImage: {{ .Values.image.repository }}/logrotate:{{ .Values.image.logrotateImageTag}}
+    imagePullPolicy: {{ .Values.image.pullPolicy }}
+    serverPort: {{ .Values.args.server_port }}
+    nodePort: {{ .Values.service.nodePort }}
+    readOnlyNodePort: {{ .Values.service.readOnlyNodePort }}
+    hostNetwork: {{ .Values.hostNetwork | default "false" }}
+    annotations:
+      fixed-node-middleware-pod: "true"
+      fixed.ipam.harmonycloud.cn: "true"
+      {{- if .Values.annotations }}
+      {{- toYaml .Values.annotations | nindent 6 }}
+      {{- end }}
+    labels:
+      app: {{ include "mysql.fullname" . }}
+      operatorname: mysql-operator
+      {{- if .Values.labels }}
+      {{- toYaml .Values.labels | nindent 6 }}
+      {{- end }}
+    resources:
+      {{- toYaml .Values.resources | nindent 6 }}
+    updateStrategy:
+      type: {{ .Values.updateStrategy}}
+  type: {{ .Values.type}}
+  syncMode: {{ .Values.syncMode}}
+  version: "{{ .Values.version}}"
+  volumeClaimTemplates:
+    - metadata:
+        name: mysql-data
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        {{- if .Values.storageClassName }}
+        storageClassName: {{ .Values.storageClassName }}
+        {{- end}}
+        resources:
+          requests:
+            storage: {{ .Values.storageSize }}
+  storageProvider:
+    {{- toYaml .Values.storageProvider | nindent 6 }}

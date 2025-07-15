@@ -1,0 +1,27 @@
+apiVersion: middleware.cn/v1
+kind: MiddlewareConfiguration
+metadata:
+  name: mysql-servicemonitor-exporter
+spec:
+  template: |
+    apiVersion: monitoring.coreos.com/v1
+    kind: ServiceMonitor
+    metadata:
+      generation: 1
+      labels:
+        k8s-app: {{ .Globe.Name }}-exporter
+      name: {{ .Globe.Name }}-exporter
+    spec:
+      endpoints:
+        - interval: 30s
+          port: mysqld-exporter
+          scheme: http
+          relabelings:
+          - replacement: mysql
+            targetLabel: middleware
+          - sourceLabels: [service]
+            replacement: {{ .Globe.Name }}
+            targetLabel: service
+      selector:
+        matchLabels:
+          k8s-app: {{ .Globe.Name }}-exporter

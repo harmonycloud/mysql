@@ -1,0 +1,21 @@
+apiVersion: middleware.cn/v1
+kind: MiddlewareActionBaseline
+metadata:
+  name: mysql-passive-switch
+spec:
+  baselineType: "NormalAction"
+  actionType: "passive-switch"
+  necessary:
+    passiveSwitched: "bool"
+  steps:
+    - name: passive-switch
+      cmd:
+        command:
+          - "kubectl"
+          - "patch"
+          - "mc"
+          - "{{ .Necessary.middlewareName }}"
+          - "-n"
+          - "{{ .Necessary.namespace }}"
+          - "--type='json'"
+          - '-p=''[{"op": "replace", "path": "/spec/passiveSwitched", "value": {{ .Necessary.passiveSwitched }} }]'''

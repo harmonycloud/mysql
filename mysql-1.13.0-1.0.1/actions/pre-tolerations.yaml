@@ -1,0 +1,55 @@
+apiVersion: middleware.cn/v1
+kind: MiddlewareActionBaseline
+metadata:
+  name: pre-mysql-tolerations
+spec:
+  baselineType: "PreAction"
+  actionType: "tolerations"
+  necessary:
+    tolerations: "array"
+  steps:
+    - name: tolerations
+      type: "KubectlEdit" # KubectlGet、KubectlEdit、KubectlExec、Exec、HTTP
+      cue: |
+        output: {
+          spec: parameters.spec
+        }
+        parameters: {
+          spec: {
+            parameters: {
+              {{- if eq (semverCompare ">= 1.19-0" .Capabilities.KubeVersion.Version) false }}
+              {{- if .Necessary.tolerations }}
+              statefulset: {
+                {{- with .Necessary.tolerations }}
+                tolerations: {{ toCue . }}
+                {{- end }}
+              }
+              {{- end }}
+              {{- end }}
+              _statefulset: {
+                spec: {
+                  template: {
+                    spec: {
+                      {{- with .Necessary.tolerations }}
+                      tolerations: {{ toCue . }}
+                      {{- end }}
+                    }
+                  }
+                }
+              }
+              {{- if .Parameters.proxy }}
+              proxy: {
+                {{- with .Necessary.tolerations }}
+                tolerations: {{ toCue . }}
+                {{- end }}
+              }
+              {{- end }}
+            }
+          }
+          resource: {
+            apiversion: "middleware.cn/v1"
+            kind: "Middleware"
+            name: "{{ .Globe.Name }}"
+            namespace: "{{ .Globe.Namespace }}"
+          }
+        }

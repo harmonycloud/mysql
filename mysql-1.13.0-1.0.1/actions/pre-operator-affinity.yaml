@@ -1,0 +1,81 @@
+apiVersion: middleware.cn/v1
+kind: MiddlewareActionBaseline
+metadata:
+  name: pre-mysql-operator-affinity
+spec:
+  baselineType: "PreAction"
+  actionType: "affinity"
+  necessary:
+    podAntiAffinityTopologKey: ""
+    podAntiAffinity: ""
+    nodeAffinity: { }
+  steps:
+    - name: affinity
+      type: "KubectlEdit" # KubectlGet、KubectlEdit、KubectlExec、Exec、HTTP
+      cue: |
+        output: {
+          spec: parameters.spec
+        }
+        parameters: {
+          spec: {
+            deployment: {
+              spec: {
+                template: {
+                  spec: {
+                    affinity: {
+                      {{- if eq .Necessary.podAntiAffinity "hard" }}                    
+                      podAntiAffinity: {
+                        requiredDuringSchedulingIgnoredDuringExecution: [
+                          {
+                            labelSelector: {
+                              matchExpressions: [
+                                {
+                                  key: "app.kubernetes.io/instance"
+                                  operator: "In"
+                                  values: ["{{ .Globe.Name }}"]
+                                },
+                              ]
+                            topologyKey: "{{ .Necessary.podAntiAffinityTopologKey }}"
+                            }
+                          },
+                        ]
+                      }
+                      {{- else if eq .Necessary.podAntiAffinity "soft" }}
+                      podAntiAffinity: {
+                        preferredDuringSchedulingIgnoredDuringExecution: [
+                          {
+                            weight: 100
+                            podAffinityTerm: {
+                              topologyKey: "{{ .Necessary.podAntiAffinityTopologKey }}"
+                              labelSelector: {
+                                matchExpressions: [
+                                  {
+                                    key: "app"
+                                    operator: "In"
+                                    values: ["{{ .Globe.Name }}"]
+                                  },
+                                ]
+                              }
+                            }
+                          },
+                        ]
+                      }
+                      {{- end}}
+                      {{- if .Necessary.nodeAffinity }}                    
+                        {{- with .Necessary.nodeAffinity }}
+                        nodeAffinity: {{ toCue . }}
+                        {{- end }}
+                      {{- end }}
+                    }   
+                  }
+                }
+              }
+            }
+          }
+          resource: {
+            apiversion: "middleware.cn/v1"
+            kind: "MiddlewareOperator"
+            name: "{{ .Globe.Name }}"
+            namespace: "{{ .Globe.Namespace }}"
+          }
+        }

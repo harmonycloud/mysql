@@ -1,0 +1,23 @@
+apiVersion: middleware.cn/v1
+kind: MiddlewareConfiguration
+metadata:
+  name: mysql-exporter
+spec:
+  template: |
+    apiVersion: v1
+    kind: Service
+    metadata:
+      labels:
+        harmonycloud.cn/statefulset: {{ .Globe.Name }}
+        k8s-app: {{ .Globe.Name }}-exporter
+      name: {{ .Globe.Name }}-mysqld-exporter
+    spec:
+      ports:
+        - name: mysqld-exporter
+          port: 9104
+          protocol: TCP
+          targetPort: 9104
+      selector:
+        app: {{ .Globe.Name }}
+      sessionAffinity: None
+      type: ClusterIP

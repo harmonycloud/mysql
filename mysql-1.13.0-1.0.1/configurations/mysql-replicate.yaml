@@ -1,0 +1,19 @@
+apiVersion: middleware.cn/v1
+kind: MiddlewareConfiguration
+metadata:
+  name: mysql-replicate
+spec:
+  template: |
+    {{- if .Values.replication.enabled }}
+    apiVersion: mysql.middleware.harmonycloud.cn/v1alpha1
+    kind: MysqlReplicate
+    metadata:
+      name: {{ .Globe.Name }}-replicate
+      labels:
+        operatorname: mysql-operator
+    spec:
+      enable: true
+      from:
+      {{ toYaml .Values.replication.from | nindent 2 }}
+      clusterName: {{ .Globe.Name }}
+    {{- end }}

@@ -1,0 +1,29 @@
+apiVersion: middleware.cn/v1
+kind: MiddlewareConfiguration
+metadata:
+  name: mysql-servicemonitor-proxy
+spec:
+  template: |
+    {{- if .Values.proxy.enable }}
+    apiVersion: monitoring.coreos.com/v1
+    kind: ServiceMonitor
+    metadata:
+      generation: 1
+      labels:
+        k8s-app: {{ .Globe.Name }}-proxy-exporter
+      name: {{ .Globe.Name }}-proxy-exporter
+    spec:
+      endpoints:
+        - interval: 30s
+          port: metrics
+          scheme: http
+          relabelings:
+          - replacement: mysql
+            targetLabel: middleware
+          - sourceLabels: [service]
+            replacement: {{ .Globe.Name }}
+            targetLabel: service
+      selector:
+        matchLabels:
+          app.kubernetes.io/instance: {{ .Globe.Name }}-proxy
+    {{- end }}
