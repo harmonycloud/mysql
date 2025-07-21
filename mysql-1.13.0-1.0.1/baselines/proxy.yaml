@@ -11,23 +11,21 @@ spec:
     gvkName: v1alpha1
   necessary:
     repository: ""
-    numberOfInstances: "2"
-#    proxyNumberOfInstances: "1"
-    volume:
-      size: ""
-      storageClass: ""
     resource:
-      limits:
-        cpu: ""
-        memory: ""
-      requests:
-        cpu: ""
-        memory: ""
-#    password: "Hc@Cloud01"
-#    serverPort: "3306"
-#    version: "5.7"
-#    character: ""
-#    collation: ""
+      mysql:
+        limits:
+          cpu: ""
+          memory: ""
+        requests:
+          cpu: ""
+          memory: ""
+        replicas: "2"
+        volume:
+          size: ""
+          storageClass: ""
+        port: "3306"
+    password: "Hc@Cloud01"
+    version: "5.7"
   preActions:
     - name: pre-mysql-logging
       parameters:
@@ -171,7 +169,7 @@ spec:
       monitorImage: "{{ .Parameters.repository }}/mysqld-exporter:v0.12.1-1.0.0"
       logrotateImage: "{{ .Parameters.repository }}/logrotate:3.21.0-1.0.0"
       imagePullPolicy: IfNotPresent
-      serverPort: 3306
+      serverPort: '"{{ .Necessary.resource.mysql.port }}"'
       nodePort:
       readOnlyNodePort:
       hostNetwork: false
@@ -183,11 +181,11 @@ spec:
         operatorname: mysql-operator
       resources:
         limits:
-          cpu: '"{{ .Necessary.resource.limits.cpu }}"'
-          memory: '"{{ .Necessary.resource.limits.memory }}"'
+          cpu: '"{{ .Necessary.resource.mysql.limits.cpu }}"'
+          memory: '"{{ .Necessary.resource.mysql.limits.memory }}"'
         requests:
-          cpu: '"{{ .Necessary.resource.requests.cpu }}"'
-          memory: '"{{ .Necessary.resource.requests.memory }}"'
+          cpu: '"{{ .Necessary.resource.mysql.requests.cpu }}"'
+          memory: '"{{ .Necessary.resource.mysql.requests.memory }}"'
       updateStrategy:
         type: RollingUpdate
     type: master-slave
@@ -240,8 +238,8 @@ spec:
         version: "{{ .Parameters.version }}"
         resources:
           limits:
-            memory: '"{{ .Necessary.resource.limits.memory }}"'
-        replicaCount: "{{ .Necessary.numberOfInstances }}"
+            memory: '"{{ .Necessary.resource.mysql.limits.memory }}"'
+        replicaCount: "{{ .Necessary.resource.mysql.replicas }}"
         args:
           innodb_buffer_pool_size:
           max_connections:
