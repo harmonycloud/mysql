@@ -14,7 +14,7 @@ spec:
           - "kubectl"
           - "patch"
           - "mc"
-          - "{{ .Necessary.middlewareName }}"
+          - "{{ .Globe.MiddlewareName }}"
           - "-n"
           - "{{ .Necessary.namespace }}"
           - "--type='json'"
