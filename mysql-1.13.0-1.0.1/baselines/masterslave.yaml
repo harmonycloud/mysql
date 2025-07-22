@@ -101,11 +101,11 @@ spec:
         operatorname: mysql-operator
       resources:
         limits:
-          cpu: '"{{ .Necessary.resource.limits.cpu }}"'
-          memory: '"{{ .Necessary.resource.limits.memory }}"'
+          cpu: '"{{ .Necessary.resource.mysql.limits.cpu }}"'
+          memory: '"{{ .Necessary.resource.mysql.limits.memory }}"'
         requests:
-          cpu: '"{{ .Necessary.resource.requests.cpu }}"'
-          memory: '"{{ .Necessary.resource.requests.memory }}"'
+          cpu: '"{{ .Necessary.resource.mysql.requests.cpu }}"'
+          memory: '"{{ .Necessary.resource.mysql.requests.memory }}"'
       updateStrategy:
         type: RollingUpdate
     type: master-slave

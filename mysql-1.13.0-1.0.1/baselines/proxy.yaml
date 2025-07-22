@@ -196,10 +196,10 @@ spec:
           name: mysql-data
         spec:
           accessModes: [ "ReadWriteOnce" ]
-          storageClassName: "{{ .Necessary.volume.storageClass }}"
+          storageClassName: "{{ .Necessary.resource.mysql.volume.storageClass }}"
           resources:
             requests:
-              storage: "{{ .Necessary.volume.size }}"
+              storage: "{{ .Necessary.resource.mysql.volume.size }}"
   configurations:
     - name: mysql-alertrule
       values:
@@ -226,7 +226,7 @@ spec:
           from: { }
     - name: mysql-sc
       values:
-        storageClassName: "{{ .Necessary.volume.storageClass }}"
+        storageClassName: "{{ .Necessary.resource.mysql.volume.storageClass }}"
     - name: mysql-servicemonitor-exporter
       values: { }
     - name: mysql-servicemonitor-proxy
