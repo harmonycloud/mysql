@@ -1,9 +1,9 @@
 apiVersion: middleware.cn/v1
 kind: MiddlewareBaseline
 metadata:
-  name: mysql-master-slave-8039
+  name: mysql-master-slave
   annotations:
-    baselineName: "8.0.39 主从模式"
+    baselineName: "主从模式"
     description: "主从模式基线,包含核心功能和必要依赖,适用于快速部署和基本应用场景,稳定可靠,易于扩展和维护."
 spec:
   operatorBaseline:
