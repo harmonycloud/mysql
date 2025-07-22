@@ -21,7 +21,7 @@ spec:
           spec: {
             parameters: {
               statefulset: {
-                env: {
+                env: [
                   {{- if .Necessary.slowqueryLogging }}
                   {
                     name: "aliyun_logs_mysqlslow"
@@ -70,7 +70,7 @@ spec:
                     value: "middleware_name={{ .Globe.Name }}"
                   },
                   {{ end }}
-                }
+                ]
               }
             }
           }
