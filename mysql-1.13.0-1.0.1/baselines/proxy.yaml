@@ -169,7 +169,7 @@ spec:
       monitorImage: "{{ .Parameters.repository }}/mysqld-exporter:v0.12.1-1.0.0"
       logrotateImage: "{{ .Parameters.repository }}/logrotate:3.21.0-1.0.0"
       imagePullPolicy: IfNotPresent
-      serverPort: '"{{ .Necessary.resource.mysql.port }}"'
+      serverPort: "{{ .Necessary.resource.mysql.port }}"
       nodePort:
       readOnlyNodePort:
       hostNetwork: false
