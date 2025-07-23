@@ -24,6 +24,13 @@ spec:
           size: ""
           storageClass: ""
         port: "3306"
+      proxy:
+        limits:
+          cpu: ""
+          memory: ""
+        requests:
+          cpu: ""
+          memory: ""
     password: "Hc@Cloud01"
     version: "5.7"
   preActions:
@@ -51,11 +58,11 @@ spec:
       replicaCount: 1
       resources:
         limits:
-          cpu: 1000m
-          memory: 2048Mi
+          cpu: "{{ .Necessary.resource.proxy.limits.cpu }}"
+          memory: "{{ .Necessary.resource.proxy.limits.memory }}"
         requests:
-          cpu: 500m
-          memory: 1024Mi
+          cpu: "{{ .Necessary.resource.proxy.requests.cpu }}"
+          memory: "{{ .Necessary.resource.proxy.requests.memory }}"
       strategy:
         type: RollingUpdate
         rollingUpdate:

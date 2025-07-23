@@ -19,22 +19,22 @@ spec:
           - "get"
           - "mid"
           - "-n"
-          - "{{ .Necessary.namespace }}"
+          - "{{ .Globe.Namespace }}"
           - "{{ .Globe.MiddlewareName }}"
           - "-o"
-          - "jsonpath=''{.spec.proxy}''"
+          - "jsonpath='{.spec.proxy}'"
           - "|"
           - "awk"
-          - '''/enable/ {found=1; exit} END {if (found) print "proxy"; else print ""}'''
+          - '''/enable/ {found=1; exit} END {if (found) print "proxy"; else print "noproxy"}'''
     - name: restart
       cmd:
         command:
           - "kubectl"
           - "patch"
-          - "redisCluster"
+          - "MysqlCluster"
           - "{{ .Globe.MiddlewareName }}"
           - "-n"
-          - "{{ .Necessary.namespace }}"
+          - "{{ .Globe.Namespace }}"
           - "--type=merge"
           - "-p"
-          - '''{"metadata":{"annotations":{"middleware.maintenance.lock":"graceful-restart",{{ if eq .Step.isProxy.output "proxy" }}"middleware.maintenance.component":"proxysql"{{ end }}}}}'''
+          - '''{"metadata":{"annotations":{"middleware.maintenance.lock":"graceful-restart"{{ if eq .Step.isProxy.output "proxy" }},"middleware.maintenance.component":"proxysql"{{ end }}}}}'''
