@@ -1,12 +1,12 @@
 apiVersion: middleware.cn/v1
 kind: MiddlewareConfiguration
 metadata:
-  name: mysql-operator-dashboard-configmap
+  name: mysql-operator-dashboard
 spec:
   template: |
     kind: ConfigMap
     metadata:
-      name: {{ .Globe.Name }}-mysql-operator-dashboard
+      name: {{ .Globe.Name }}-dashboard
       labels:
         grafana_dashboard: "1"
     apiVersion: v1

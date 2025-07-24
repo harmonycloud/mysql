@@ -245,6 +245,6 @@ spec:
       values: {}
     - name: "mysql-operator-configmap"
       values: { }
-    - name: "mysql-operator-dashboard-configmap"
+    - name: "mysql-operator-dashboard"
       values: { }
 
