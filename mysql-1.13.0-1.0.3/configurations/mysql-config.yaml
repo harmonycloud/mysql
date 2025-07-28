@@ -54,7 +54,7 @@ spec:
         innodb_buffer_pool_size         ={{ .Values.args.innodb_buffer_pool_size | default $bufferMemory  }}
         max_connections                 ={{ .Values.args.max_connections | default $maxConnectionsMemory }}
         max_user_connections            ={{ .Values.args.max_user_connections | default $maxUserConnections }}
-    
+
         #************** basic ***************
         {{- if eq $bigVersion "8" }}
         default-authentication-plugin   =mysql_native_password
@@ -241,45 +241,45 @@ spec:
         {{- if .Values.features.threadpool.enabled }}
         plugin-load-add=threadpool.so
         {{- end }}
-    
+
         {{- if .Values.features.recycle.enabled }}
         plugin-load-add=recycle_bin.so
         recycle_bin_enabled=ON
         {{- end }}
-    
+
         {{- if .Values.features.bufferpoolControl.enabled }}
         plugin-load-add=buffer_pool_control.so
         buffer_pool_control_enabled=ON
         {{- end }}
-    
+
         {{ if .Values.features.auditLog.enabled }}
         {{ if eq $bigVersion "5" }}
         plugin-load-add=libaudit_plugin.so
         audit_json_log_file             =/data/mysql/DBNAME/elog/mysql-audit.json
         audit_whitelist_users           =operator,healthchecker,replic,zabbixjk,boot,skip-grants
         audit_json_file                 =ON
-    
+
         {{ if .Values.args.audit_record_cmds }}
         loose-audit_record_cmds         =  {{ .Values.args.audit_record_cmds }}
         {{ end }}
         {{ if  .Values.args.audit_whitelist_cmds }}
         loose-audit_whitelist_cmds      =  {{ .Values.args.audit_whitelist_cmds }}
         {{ end }}
-    
+
         {{ else }}
         {{ if lt .Values.version "8.0.39" -}}
         loose-plugin-load-add=libaudit_plugin.so
         loose-audit_json_log_file       =/data/mysql/DBNAME/elog/mysql-audit.json
         loose-audit_whitelist_users     =operator,healthchecker,replic,zabbixjk,boot,skip-grants
         loose-audit_json_file           =ON
-    
+
         {{ if .Values.args.audit_record_cmds }}
         loose-audit_record_cmds         =  {{ .Values.args.audit_record_cmds }}
         {{ end }}
         {{ if  .Values.args.audit_whitelist_cmds }}
         loose-audit_whitelist_cmds      =  {{ .Values.args.audit_whitelist_cmds }}
         {{ end }}
-    
+
         {{ else}}
         loose-plugin-load-add             =audit_log.so
         loose-audit_log_file              =/data/mysql/DBNAME/elog/mysql-audit.json
@@ -296,11 +296,11 @@ spec:
         {{ end }}
         {{ end }}
         {{ end }}
-    
+
         {{- range $k, $v := .Values.additionArgs }}
         {{$k}}                          ={{$v}}
         {{- end }}
-    
+
     kind: ConfigMap
     metadata:
       name: {{ .Globe.Name }}-config
