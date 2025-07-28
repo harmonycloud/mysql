@@ -5,7 +5,7 @@ values:
     parameters:
       - innodb_flush_log_at_trx_commit:
           - name: default
-            value: 2
+            value: '2'
           - name: isReboot
             value: n
           - name: range
@@ -14,7 +14,7 @@ values:
             value: Controls the balance between strict ACID compliance for commit operations and higher performance that is possible when commit-related I/O operations are rearranged and done in batches.
       - sql_mode:
           - name: default
-            value: NO_ENGINE_SUBSTITUTION,STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,ERROR_FOR_DIVISION_BY_ZERO
+            value: 'NO_ENGINE_SUBSTITUTION,STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,ERROR_FOR_DIVISION_BY_ZERO'
           - name: isReboot
             value: n
           - name: range
@@ -23,7 +23,7 @@ values:
             value: "Syntax: sql-mode=mode[,mode[,mode...]]. See the manual for the complete list of valid sql modes"
       - sync_binlog:
           - name: default
-            value: 1
+            value: '1'
           - name: isReboot
             value: n
           - name: range
@@ -32,7 +32,7 @@ values:
             value: "Controls how often the MySQL server synchronizes the binary log to disk."
       - max_connect_errors:
           - name: default
-            value: 100000
+            value: '100000'
           - name: isReboot
             value: n
           - name: range
@@ -41,7 +41,7 @@ values:
             value: "If there is more than this number of interrupted connections from a host this host will be blocked from further connections"
       - max_execution_time:
           - name: default
-            value: 10000
+            value: '10000'
           - name: isReboot
             value: n
           - name: range
@@ -50,7 +50,7 @@ values:
             value: "statement be interrupted if the executing time exceeds this value"
       - group_concat_max_len:
           - name: default
-            value: 1048576
+            value: '1048576'
           - name: isReboot
             value: n
           - name: range
@@ -59,7 +59,7 @@ values:
             value: "The maximum length of the result of function GROUP_CONCAT()"
       - lock_wait_timeout:
           - name: default
-            value: 60
+            value: '60'
           - name: isReboot
             value: n
           - name: range
@@ -68,7 +68,7 @@ values:
             value: "This variable specifies the timeout in seconds for attempts to acquire metadata locks. The permissible values range from 1 to 31536000 (1 year). The default is 60."
       - thread_cache_size:
           - name: default
-            value: 64
+            value: '64'
           - name: isReboot
             value: n
           - name: range
@@ -77,7 +77,7 @@ values:
             value: "How many threads the server should cache for reuse. When a client disconnects, the client's threads are put in the cache if there are fewer than thread_cache_size threads there. Requests for threads are satisfied by reusing threads taken from the cache if possible, and only when the cache is empty is a new thread created. This variable can be increased to improve performance if you have a lot of new connections. Normally, this does not provide a notable performance improvement if you have a good thread implementation. However, if your server sees hundreds of connections per second you should normally set thread_cache_size high enough so that most new connections use cached threads. By examining the difference between the Connections and Threads_created status variables, you can see how efficient the thread cache is."
       - character_set_server:
           - name: default
-            value: utf8mb4
+            value: 'utf8mb4'
           - name: isReboot
             value: y
           - name: range
@@ -86,7 +86,7 @@ values:
             value: "The default character set"
       - collation_server:
           - name: default
-            value: utf8mb4_0900_ai_ci
+            value: 'utf8mb4_0900_ai_ci'
           - name: isReboot
             value: y
           - name: range
@@ -95,7 +95,7 @@ values:
             value: "Collation for the character set."
       - transaction_isolation:
           - name: default
-            value: READ-COMMITTED
+            value: 'READ-COMMITTED'
           - name: isReboot
             value: n
           - name: range
@@ -113,7 +113,7 @@ values:
             value: "This system variable determines whether the server enables certain nonstandard behaviors for default values and NULL-value handling in TIMESTAMP columns."
       - log_timestamps:
           - name: default
-            value: SYSTEM
+            value: 'SYSTEM'
           - name: isReboot
             value: n
           - name: range
@@ -158,7 +158,7 @@ values:
             value: "Specify the initial slow query log state. With no argument or an argument of 1, the --slow-query-log option enables the log. If omitted or given with an argument of 0, the option disables the log."
       - long_query_time:
           - name: default
-            value: 1
+            value: '1'
           - name: isReboot
             value: n
           - name: range
@@ -176,7 +176,7 @@ values:
             value: "Log queries that are executed without benefit of any index to the slow log if it is open"
       - log_throttle_queries_not_using_indexes:
           - name: default
-            value: 10
+            value: '10'
           - name: isReboot
             value: n
           - name: range
@@ -194,7 +194,7 @@ values:
             value: "Whether the general query log is enabled. The destination for log output is controlled by the log_output system variable."
       - expire_logs_days:
           - name: default
-            value: 7
+            value: '7'
           - name: isReboot
             value: n
           - name: range
@@ -203,7 +203,7 @@ values:
             value: "The number of days for automatic binary log file removal."
       - max_binlog_size:
           - name: default
-            value: 524288000
+            value: '524288000'
           - name: isReboot
             value: n
           - name: range
@@ -221,7 +221,7 @@ values:
             value: "The binlog_rows_query_log_events system variable affects row-based logging only. When enabled, it causes the MySQL Server to write informational log events such as row query log events into its binary log. This information can be used for debugging and related purposes.such as obtaining the original query issued on the master when it cannot be reconstructed from the row updates."
       - binlog_cache_size:
           - name: default
-            value: 131072
+            value: '131072'
           - name: isReboot
             value: n
           - name: range
@@ -230,7 +230,7 @@ values:
             value: "The size of the transactional cache for updates to transactional engines for the binary log. If you often use transactions containing many statements, you can increase this to get more performance"
       - binlog_stmt_cache_size:
           - name: default
-            value: 131072
+            value: '131072'
           - name: isReboot
             value: n
           - name: range
@@ -239,7 +239,7 @@ values:
             value: "The size of the statement cache for updates to non-transactional engines for the binary log. If you often use statements updating a great number of rows, you can increase this to get more performance"
       - max_binlog_cache_size:
           - name: default
-            value: 2147483648
+            value: '2147483648'
           - name: isReboot
             value: n
           - name: range
@@ -248,7 +248,7 @@ values:
             value: "max_binlog_cache_size sets the size for the transaction cache only.The visibility to sessions of max_binlog_cache_size matches that of the binlog_cache_size system variable."
       - max_binlog_stmt_cache_size:
           - name: default
-            value: 2147483648
+            value: '2147483648'
           - name: isReboot
             value: n
           - name: range
@@ -257,7 +257,7 @@ values:
             value: "If nontransactional statements within a transaction require more than this many bytes of memory, the server generates an error. The minimum value is 4096. The maximum and default values are 4GB on 32-bit platforms and 16EB (exabytes) on 64-bit platforms."
       - max_relay_log_size:
           - name: default
-            value: 524288000
+            value: '524288000'
           - name: isReboot
             value: n
           - name: range
@@ -284,7 +284,7 @@ values:
             value: "If enabled, this variable enables automatic relay log recovery immediately following server startup. The recovery process creates a new relay log file, initializes the SQL thread position to this new relay log, and initializes the I/O thread to the SQL thread position. Reading of the relay log from the source then continues."
       - binlog_group_commit_sync_delay:
           - name: default
-            value: 1
+            value: '1'
           - name: isReboot
             value: n
           - name: range
@@ -293,7 +293,7 @@ values:
             value: "Controls how many microseconds the binary log commit waits before synchronizing the binary log file to disk."
       - binlog_group_commit_sync_no_delay_count:
           - name: default
-            value: 1000
+            value: '1000'
           - name: isReboot
             value: n
           - name: range
