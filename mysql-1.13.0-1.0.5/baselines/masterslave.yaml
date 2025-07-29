@@ -23,7 +23,6 @@ spec:
         volume:
           size: ""
           storageClass: ""
-        port: "3306"
     password: "Hc@Cloud01"
     version: "8.0.39"
   preActions:
@@ -89,7 +88,7 @@ spec:
       monitorImage: "{{ .Necessary.repository }}/mysqld-exporter:v0.12.1-1.0.0"
       logrotateImage: "{{ .Necessary.repository }}/logrotate:3.21.0-1.0.0"
       imagePullPolicy: IfNotPresent
-      serverPort: "{{ .Necessary.resource.mysql.port }}"
+      serverPort: 3306
       nodePort:
       readOnlyNodePort:
       hostNetwork: false
@@ -128,7 +127,7 @@ spec:
     - name: mysql-connection-credential
       values:
         args:
-          server_port: 3306
+          server_port: "{{ .Parameters.statefulset.serverPort }}"
           root_password: "Hc@Cloud01"
     - name: mysql-exporter
       values: { }
