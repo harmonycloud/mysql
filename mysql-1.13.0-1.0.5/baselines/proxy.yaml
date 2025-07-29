@@ -155,7 +155,7 @@ spec:
       migration: { }
       type: AutoDeploy
     migratePolicy: { }
-    replicas: "{{ .Necessary.numberOfInstances }}"
+    replicas: "{{ .Necessary.resource.mysql.replicas }}"
     repository: "{{ .Necessary.repository }}/mysql-cluster"
     secretName: mysql-secret
     statefulset:
