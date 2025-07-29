@@ -7,10 +7,10 @@ spec:
     apiVersion: v1
     kind: ConfigMap
     metadata:
-      name: {{ .Release.Name }}-mysql-operator-resource
+      name: {{ .Globe.Name }}-mysql-operator-resource
       labels:
-        app.kubernetes.io/name: {{ .Release.Name }}-mysql-operator
-        app.kubernetes.io/instance: {{ .Release.Name }}
+        app.kubernetes.io/name: {{ .Globe.Name }}-mysql-operator
+        app.kubernetes.io/instance: {{ .Globe.Name }}
     {{`data:
       _helpers.tpl: |
         {{/* vim: set filetype=mustache: */}}
