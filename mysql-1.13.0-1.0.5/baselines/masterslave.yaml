@@ -23,7 +23,6 @@ spec:
         volume:
           size: ""
           storageClass: ""
-        port: "3306"
     password: "Hc@Cloud01"
     version: "8.0.39"
   preActions:

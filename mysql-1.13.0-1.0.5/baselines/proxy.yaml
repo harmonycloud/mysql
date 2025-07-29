@@ -23,7 +23,6 @@ spec:
         volume:
           size: ""
           storageClass: ""
-        port: "3306"
       proxy:
         limits:
           cpu: ""
