@@ -21,7 +21,7 @@ spec:
       requests:
         cpu: "100m"
         memory: "250Mi"
-    numberOfInstances: ""
+    replicas: ""
   preActions:
     - name: pre-mysql-operator-affinity
       parameters:
@@ -158,7 +158,7 @@ spec:
           verbs: [ "list", "watch", "update", "patch" ]
   deployment:
     spec:
-      replicas: "{{ .Necessary.numberOfInstances }}"
+      replicas: "{{ .Necessary.replicas }}"
       selector:
         matchLabels:
           app.kubernetes.io/name: mysql-operator
