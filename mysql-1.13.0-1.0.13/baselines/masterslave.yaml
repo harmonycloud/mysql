@@ -77,7 +77,7 @@ spec:
         - name: DBNAME
           value: "{{ .Globe.Name }}"
         - name: MYSQL_ROOT_PASSWORD
-          value: "Hc@Cloud01"
+          value: "{{ .Necessary.password }}"
         - name: MYSQL_USER_HOST
           value: "%"
         - name: MYSQL_ROOT_HOST
@@ -128,7 +128,7 @@ spec:
       values:
         args:
           server_port: "{{ .Parameters.statefulset.serverPort }}"
-          root_password: "Hc@Cloud01"
+          root_password: "{{ .Necessary.password }}"
     - name: mysql-exporter
       values: { }
     - name: mysql-initsql-cm
