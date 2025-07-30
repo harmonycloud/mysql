@@ -35,7 +35,8 @@ spec:
                     name: "aliyun_logs_mysqlslow_tags"
                     value: "middleware_name={{ .Globe.Name }}"
                   },
-                  {{ end }}
+                  {{- end }}
+                  {{- if hasKey .Necessary "auditLogging" }}
                   {{- if .Necessary.auditLogging }}
                   {
                     name: "aliyun_logs_mysqlaudit"
@@ -49,7 +50,8 @@ spec:
                     name: "aliyun_logs_mysqlaudit_tags"
                     value: "middleware_name={{ .Globe.Name }}"
                   },
-                  {{ end }}
+                  {{- end }}
+                  {{- end }}
                   {{- if .Necessary.stdoutLogging }}
                   {
                     name: "aliyun_logs_middlewarestdout"
@@ -59,7 +61,7 @@ spec:
                     name: "aliyun_logs_middlewarestdout_tags"
                     value: "middleware_name={{ .Globe.Name }}"
                   },
-                  {{ end }}
+                  {{- end }}
                   {{- if .Necessary.fileLogging }}
                   {
                     name: "aliyun_logs_middlewarelogstash"
@@ -69,7 +71,7 @@ spec:
                     name: "aliyun_logs_middlewarelogstash_tags"
                     value: "middleware_name={{ .Globe.Name }}"
                   },
-                  {{ end }}
+                  {{- end }}
                 ]
               }
             }
