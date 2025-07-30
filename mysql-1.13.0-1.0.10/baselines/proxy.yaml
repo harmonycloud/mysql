@@ -30,6 +30,7 @@ spec:
         requests:
           cpu: ""
           memory: ""
+        replicas: "3"
     password: "Hc@Cloud01"
     version: "5.7"
   preActions:
@@ -54,7 +55,7 @@ spec:
   parameters:
     proxy:
       enable: true
-      replicaCount: 1
+      replicaCount: "{{ .Necessary.resource.proxy.replicas }}"
       resources:
         limits:
           cpu: "{{ .Necessary.resource.proxy.limits.cpu }}"
