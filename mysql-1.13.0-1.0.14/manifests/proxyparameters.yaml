@@ -1,7 +1,7 @@
 middlewareDefinition: mysql-proxy
 values:
   - name: mysql
-    path: spec.configurations.mysql-config.values.args
+    path: spec|configurations|mysql-config|values|args
     parameters:
       - innodb_flush_log_at_trx_commit:
           - name: default
