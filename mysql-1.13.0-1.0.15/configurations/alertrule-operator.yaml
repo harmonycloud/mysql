@@ -27,6 +27,9 @@ spec:
               for: 5m
               labels:
                 severity: warning
+                {{- with .Values.labels }}
+                {{ toYaml . }}
+                {{- end }}
             - alert: mysqlOperatorMemoryUsageHigh
               annotations:
                 message: 'The memory usage of MySQL Operator has exceeded 90%, current_value={{ `{{ printf "%.0f" $value }}` }}%.  (Namespace: {{ .Globe.Namespace }}, Pod: {{`{{ $labels.pod }}`}})'
@@ -34,6 +37,9 @@ spec:
               for: 5m
               labels:
                 severity: warning
+                {{- with .Values.labels }}
+                {{ toYaml . }}
+                {{- end }}
             - alert: mysqlOperatorInstanceNotRunning
               annotations:
                 message: "MySQL operator instances stopped working.(Namespace: {{ .Globe.Namespace }}, Pod: {{`{{ $labels.pod }}`}})"
@@ -42,6 +48,9 @@ spec:
               for: 5m
               labels:
                 severity: warning
+                {{- with .Values.labels }}
+                {{ toYaml . }}
+                {{- end }}
             - alert: multipleMySQLOperatorInstanceNotRunning
               annotations:
                 message: "Multiple MySQL operator instances stopped running.(Namespace: {{ .Globe.Namespace }}, Pod: {{`{{ $labels.pod }}`}})"
@@ -49,3 +58,6 @@ spec:
               for: 5m
               labels:
                 severity: critical
+                {{- with .Values.labels }}
+                {{ toYaml . }}
+                {{- end }}

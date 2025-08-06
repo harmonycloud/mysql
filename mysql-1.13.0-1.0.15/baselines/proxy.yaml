@@ -1,10 +1,10 @@
 apiVersion: middleware.cn/v1
 kind: MiddlewareBaseline
 metadata:
-  name: mysql-master-slave
+  name: mysql-proxy
   annotations:
-    baselineName: "主从模式"
-    description: "主从模式基线,包含核心功能和必要依赖,适用于快速部署和基本应用场景,稳定可靠,易于扩展和维护."
+    baselineName: "代理模式"
+    description: "代理模式基线,包含核心功能和必要依赖,适用于快速部署和基本应用场景,稳定可靠,易于扩展和维护."
 spec:
   operatorBaseline:
     name: mysql-operator-standard
@@ -23,9 +23,21 @@ spec:
         volume:
           size: ""
           storageClass: ""
+      proxy:
+        limits:
+          cpu: ""
+          memory: ""
+        requests:
+          cpu: ""
+          memory: ""
+        replicas: "3"
     password: "Hc@Cloud01"
-    version: "8.0.39"
+    version: "5.7"
   preActions:
+    - name: pre-mysql-alertrule-labels
+      parameters:
+        labels: {}
+      exposed: false
     - name: pre-mysql-logging
       parameters:
         fileLogging: true
@@ -45,6 +57,86 @@ spec:
       fixed: false
       exposed: true
   parameters:
+    proxy:
+      enable: true
+      replicaCount: "{{ .Necessary.resource.proxy.replicas }}"
+      resources:
+        limits:
+          cpu: "{{ .Necessary.resource.proxy.limits.cpu }}"
+          memory: "{{ .Necessary.resource.proxy.limits.memory }}"
+        requests:
+          cpu: "{{ .Necessary.resource.proxy.requests.cpu }}"
+          memory: "{{ .Necessary.resource.proxy.requests.memory }}"
+      strategy:
+        type: RollingUpdate
+        rollingUpdate:
+          maxUnavailable: 1
+      securityContext:
+        fsGroup: 0
+      image:
+        repository: "{{ .Necessary.repository }}/proxysql"
+        tag: "2.5.2-1.0.0"
+        pullPolicy: "IfNotPresent"
+      args:
+        # MySQL Variables
+        mysql-max_connections: 2048
+        mysql-max_allowed_packet: 4194304
+        mysql-threads: 2
+        mysql-default_query_delay: 0
+        mysql-default_query_timeout: 36000000
+        mysql-have_compress: true
+        mysql-poll_timeout: 2000
+        mysql-interfaces: "0.0.0.0:6033"
+        mysql-default_schema: "information_schema"
+        mysql-stacksize: 1048576
+        mysql-server_version: "8.0.30"
+        mysql-connect_timeout_server: 3000
+        mysql-ping_interval_server_msec: 15000
+        mysql-ping_timeout_server: 500
+        mysql-commands_stats: true
+        mysql-sessions_sort: true
+        mysql-connect_retries_on_failure: 10
+        mysql-auto_increment_delay_multiplex: 0
+        # MySQL Monitor Variables
+        mysql-monitor_history: 600000
+        mysql-monitor_connect_interval: 5000
+        mysql-monitor_ping_interval: 2000
+        mysql-monitor_read_only_interval: 1500
+        mysql-monitor_read_only_timeout: 500
+        mysql-monitor_slave_lag_when_null: 0
+        # other arges
+        sync_user_period: 600000
+        mysql_query_rules: |
+          (
+            {
+              rule_id=1
+              active=1
+              match_pattern="^SELECT .* FOR UPDATE$"
+              destination_hostgroup=0
+              apply=1
+            },
+            {
+              rule_id=2
+              active=1
+              match_pattern="^SELECT"
+              destination_hostgroup=1
+              apply=1
+            },
+            {
+              rule_id=3
+              active=1
+              match_pattern="SELECT  @@"
+              destination_hostgroup=1
+              apply=1
+            },
+            {
+              rule_id=4
+              active=1
+              match_pattern="show databases"
+              destination_hostgroup=1
+              apply=1
+            },
+          )
     _statefulset:
       spec:
         template:
@@ -109,7 +201,7 @@ spec:
         type: RollingUpdate
     type: master-slave
     syncMode: semi-sync
-    version: "{{ .Necessary.version }}"
+    version: "8.0.39"
     volumeClaimTemplates:
       - metadata:
           name: mysql-data
@@ -123,7 +215,7 @@ spec:
     - name: mysql-alertrule
       values:
         proxy:
-          enable: false
+          enable: true
     - name: mysql-connection-credential
       values:
         args:
@@ -151,7 +243,7 @@ spec:
     - name: mysql-servicemonitor-proxy
       values:
         proxy:
-          enable: false
+          enable: true
     - name: mysql-config
       values:
         version: "{{ .Parameters.version }}"

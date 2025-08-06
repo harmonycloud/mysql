@@ -22,6 +22,10 @@ spec:
         cpu: "100m"
         memory: "250Mi"
   preActions:
+    - name: pre-mysql-operator-alertrule-labels
+      parameters:
+        labels: {}
+      exposed: false
     - name: pre-mysql-operator-affinity
       parameters:
         podAntiAffinityTopologKey: "kubernetes.io/hostname"

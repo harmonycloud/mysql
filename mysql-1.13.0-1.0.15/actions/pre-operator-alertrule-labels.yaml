@@ -1,0 +1,36 @@
+apiVersion: middleware.cn/v1
+kind: MiddlewareActionBaseline
+metadata:
+  name: pre-mysql-operator-alertrule-labels
+spec:
+  baselineType: "PreAction"
+  actionType: "alertlabel"
+  necessary:
+    labels: ""
+  steps:
+    - name: alertlabels
+      type: "KubectlEdit" # KubectlGet、KubectlEdit、KubectlExec、Exec、HTTP
+      cue: |
+        output: {
+          spec: parameters.spec
+        }
+        parameters: {
+          spec: {
+            configurations: [
+              {
+                name: "mysql-operator-alertrule"
+                values: {
+                  {{- with .Necessary.labels }}
+                  labels: {{ toCue . }}
+                  {{- end }}
+                }
+              },
+            ]
+          }
+          resource: {
+            apiversion: "middleware.cn/v1"
+            kind: "Middleware"
+            name: "{{ .Globe.Name }}"
+            namespace: "{{ .Globe.Namespace }}"
+          }
+        }
