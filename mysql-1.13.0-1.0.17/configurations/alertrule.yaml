@@ -28,7 +28,7 @@ spec:
             project: zeus
             subject: middleware
             {{- with .Values.labels }}
-            {{ toYaml . }}
+            {{- toYaml . | nindent 8 }}
             {{- end }}
       - name: mysql-cluster
         rules:
@@ -46,7 +46,7 @@ spec:
             project: zeus
             subject: middleware
             {{- with .Values.labels }}
-            {{ toYaml . }}
+            {{- toYaml . | nindent 8 }}
             {{- end }}
         - alert: MySQLReplicationLag
           annotations:
@@ -62,7 +62,7 @@ spec:
             project: zeus
             subject: middleware
             {{- with .Values.labels }}
-            {{ toYaml . }}
+            {{- toYaml . | nindent 8 }}
             {{- end }}
         - alert: MySQLInnoDBLogWaits
           annotations:
@@ -77,7 +77,7 @@ spec:
             project: zeus
             subject: middleware
             {{- with .Values.labels }}
-            {{ toYaml . }}
+            {{- toYaml . | nindent 8 }}
             {{- end }}
       - name: mysql-stats
         rules:
@@ -94,7 +94,7 @@ spec:
             project: zeus
             subject: middleware
             {{- with .Values.labels }}
-            {{ toYaml . }}
+            {{- toYaml . | nindent 8 }}
             {{- end }}
         - alert: MySQLOpenFilesHigh
           annotations:
@@ -109,7 +109,7 @@ spec:
             project: zeus
             subject: middleware
             {{- with .Values.labels }}
-            {{ toYaml . }}
+            {{- toYaml . | nindent 8 }}
             {{- end }}
         - alert: MySQLReadBufferOutOfMaxAllow
           annotations:
@@ -124,7 +124,7 @@ spec:
             project: zeus
             subject: middleware
             {{- with .Values.labels }}
-            {{ toYaml . }}
+            {{- toYaml . | nindent 8 }}
             {{- end }}
         - alert: MySQLTooManyConnections
           annotations:
@@ -140,7 +140,7 @@ spec:
             project: zeus
             subject: middleware
             {{- with .Values.labels }}
-            {{ toYaml . }}
+            {{- toYaml . | nindent 8 }}
             {{- end }}
         - alert: MySQLIOThreadStopped
           annotations:
@@ -155,7 +155,7 @@ spec:
             project: zeus
             subject: middleware
             {{- with .Values.labels }}
-            {{ toYaml . }}
+            {{- toYaml . | nindent 8 }}
             {{- end }}
         - alert: MySQLSQLThreadStopped
           annotations:
@@ -170,7 +170,7 @@ spec:
             project: zeus
             subject: middleware
             {{- with .Values.labels }}
-            {{ toYaml . }}
+            {{- toYaml . | nindent 8 }}
             {{- end }}
         - alert: MySQLSQLThreadError
           annotations:
@@ -185,7 +185,7 @@ spec:
             project: zeus
             subject: middleware
             {{- with .Values.labels }}
-            {{ toYaml . }}
+            {{- toYaml . | nindent 8 }}
             {{- end }}
         - alert: MySQLSlaveLaggingBehindMaster
           annotations:
@@ -200,7 +200,7 @@ spec:
             project: zeus
             subject: middleware
             {{- with .Values.labels }}
-            {{ toYaml . }}
+            {{- toYaml . | nindent 8 }}
             {{- end }}
         - alert: MySQLVolumeUsage70
           expr:  (100 * kube_persistentvolumeclaim_info{namespace='{{ .Globe.Namespace }}', persistentvolumeclaim=~"mysql-data-{{ .Globe.Name }}-[0-9]"}) * on(volumename) group_left max(label_replace ((used_size_kb / total_size_kb),"volumename", "$1", "pv", "(.+)")) by (volumename) > 70
@@ -210,7 +210,7 @@ spec:
             project: zeus
             subject: middleware
             {{- with .Values.labels }}
-            {{ toYaml . }}
+            {{- toYaml . | nindent 8 }}
             {{- end }}
           annotations:
             product: harmonycloud
@@ -224,7 +224,7 @@ spec:
             project: zeus
             subject: middleware
             {{- with .Values.labels }}
-            {{ toYaml . }}
+            {{- toYaml . | nindent 8 }}
             {{- end }}
           annotations:
             product: harmonycloud
@@ -240,7 +240,7 @@ spec:
             project: zeus
             subject: middleware
             {{- with .Values.labels }}
-            {{ toYaml . }}
+            {{- toYaml . | nindent 8 }}
             {{- end }}
         - alert: MySQLWorkingSetMemoryUsageHigh95
           annotations:
@@ -252,7 +252,7 @@ spec:
             project: zeus
             subject: middleware
             {{- with .Values.labels }}
-            {{ toYaml . }}
+            {{- toYaml . | nindent 8 }}
             {{- end }}
         - alert: MySQLRSSMemoryUsageHigh80
           annotations:
@@ -264,7 +264,7 @@ spec:
             project: zeus
             subject: middleware
             {{- with .Values.labels }}
-            {{ toYaml . }}
+            {{- toYaml . | nindent 8 }}
             {{- end }}
         - alert: MySQLCpuUsageHigh
           annotations:
@@ -276,7 +276,7 @@ spec:
             project: zeus
             subject: middleware
             {{- with .Values.labels }}
-            {{ toYaml . }}
+            {{- toYaml . | nindent 8 }}
             {{- end }}
       {{- if .Values.proxy.enable }}
       - name: proxysql
@@ -294,7 +294,7 @@ spec:
             project: zeus
             subject: middleware
             {{- with .Values.labels }}
-            {{ toYaml . }}
+            {{- toYaml . | nindent 8 }}
             {{- end }}
         - alert: ProxySqlConnectCheckErr
           annotations:
@@ -309,7 +309,7 @@ spec:
             project: zeus
             subject: middleware
             {{- with .Values.labels }}
-            {{ toYaml . }}
+            {{- toYaml . | nindent 8 }}
             {{- end }}
         - alert: ProxySqlPinCheckErr
           annotations:
@@ -324,7 +324,7 @@ spec:
             project: zeus
             subject: middleware
             {{- with .Values.labels }}
-            {{ toYaml . }}
+            {{- toYaml . | nindent 8 }}
             {{- end }}
         - alert: ProxySqlReadOnlyCheckErr
           annotations:
@@ -339,7 +339,7 @@ spec:
             project: zeus
             subject: middleware
             {{- with .Values.labels }}
-            {{ toYaml . }}
+            {{- toYaml . | nindent 8 }}
             {{- end }}
         - alert: ProxySqlReplicationLagCheckErr
           annotations:
@@ -354,6 +354,6 @@ spec:
             project: zeus
             subject: middleware
             {{- with .Values.labels }}
-            {{ toYaml . }}
+            {{- toYaml . | nindent 8 }}
             {{- end }}
     {{- end }}

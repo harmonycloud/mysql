@@ -30,7 +30,7 @@ spec:
                 project: zeus
                 subject: operator
                 {{- with .Values.labels }}
-                {{ toYaml . }}
+                {{- toYaml . | nindent 12 }}
                 {{- end }}
             - alert: mysqlOperatorMemoryUsageHigh
               annotations:
@@ -42,7 +42,7 @@ spec:
                 project: zeus
                 subject: operator
                 {{- with .Values.labels }}
-                {{ toYaml . }}
+                {{- toYaml . | nindent 12 }}
                 {{- end }}
             - alert: mysqlOperatorInstanceNotRunning
               annotations:
@@ -55,7 +55,7 @@ spec:
                 project: zeus
                 subject: operator
                 {{- with .Values.labels }}
-                {{ toYaml . }}
+                {{- toYaml . | nindent 12 }}
                 {{- end }}
             - alert: multipleMySQLOperatorInstanceNotRunning
               annotations:
@@ -67,5 +67,5 @@ spec:
                 project: zeus
                 subject: operator
                 {{- with .Values.labels }}
-                {{ toYaml . }}
+                {{- toYaml . | nindent 12 }}
                 {{- end }}
