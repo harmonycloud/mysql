@@ -25,6 +25,8 @@ spec:
           for: 5m
           labels:
             severity: warning
+            project: zeus
+            subject: middleware
       - name: mysql-cluster
         rules:
         - alert: MySQLReplicationNotRunning
@@ -38,6 +40,8 @@ spec:
           for: 5m
           labels:
             severity: warning
+            project: zeus
+            subject: middleware
         - alert: MySQLReplicationLag
           annotations:
             message: "MySQL slave replication has fallen behind and is not recovering, current_value={{ `{{ $value }}` }}. (Namespace: {{ .Globe.Namespace }}, ServiceName: {{ .Globe.Name }}, Pod: {{`{{ $labels.pod }}`}})"
@@ -49,6 +53,8 @@ spec:
           for: 5m
           labels:
             severity: warning
+            project: zeus
+            subject: middleware
         - alert: MySQLInnoDBLogWaits
           annotations:
             message: "MySQL innodb logs are waiting for disk at a rate of {{`{{$value}}`}} second. (Namespace: {{ .Globe.Namespace }}, ServiceName: {{ .Globe.Name }}, Pod: {{`{{ $labels.pod }}`}})"
@@ -59,6 +65,8 @@ spec:
           expr: rate(mysql_global_status_innodb_log_waits{namespace='{{ .Globe.Namespace }}', service='{{ .Globe.Name }}'}[15m]) > 10
           labels:
             severity: warning
+            project: zeus
+            subject: middleware
       - name: mysql-stats
         rules:
         - alert: MySQLInstanceDown
@@ -71,6 +79,8 @@ spec:
           for: 5m
           labels:
             severity: critical
+            project: zeus
+            subject: middleware
         - alert: MySQLOpenFilesHigh
           annotations:
             message: 'MySQL Open files is high, Please consider increasing open_files_limit, current_value={{ `{{ printf "%.0f" $value }}` }}%. (Namespace: {{ .Globe.Namespace }}, ServiceName: {{ .Globe.Name }}, Pod: {{`{{ $labels.pod }}`}})'
@@ -81,6 +91,8 @@ spec:
           for: 5m
           labels:
             severity: warning
+            project: zeus
+            subject: middleware
         - alert: MySQLReadBufferOutOfMaxAllow
           annotations:
             message: "MySQl read buffer size (read_buffer_size) is bigger than max. allowed packet size (max_allowed_packet).This can break your replication. (Namespace: {{ .Globe.Namespace }}, ServiceName: {{ .Globe.Name }}, Pod: {{`{{ $labels.pod }}`}})"
@@ -91,6 +103,8 @@ spec:
           for: 5m
           labels:
             severity: warning
+            project: zeus
+            subject: middleware
         - alert: MySQLTooManyConnections
           annotations:
             alertLevel: warning
@@ -102,6 +116,8 @@ spec:
           for: 5m
           labels:
             severity: warning
+            project: zeus
+            subject: middleware
         - alert: MySQLIOThreadStopped
           annotations:
             message: "MySQL instance IO thread has stopped. This is usually because it cannot connect to the Master any more. (Namespace: {{ .Globe.Namespace }}, ServiceName: {{ .Globe.Name }}, Pod: {{`{{ $labels.pod }}`}})"
@@ -112,6 +128,8 @@ spec:
           for: 5m
           labels:
             severity: critical
+            project: zeus
+            subject: middleware
         - alert: MySQLSQLThreadStopped
           annotations:
             message: "MySQL instance SQL thread has stopped. This is usually because it cannot apply a SQL statement received from the master. (Namespace: {{ .Globe.Namespace }}, ServiceName: {{ .Globe.Name }}, Pod: {{`{{ $labels.pod }}`}})"
@@ -122,6 +140,8 @@ spec:
           for: 5m
           labels:
             severity: critical
+            project: zeus
+            subject: middleware
         - alert: MySQLSQLThreadError
           annotations:
             message: "MySQL instance SQL thread has stopped. This is usually because it cannot apply a SQL statement received from the master. (Namespace: {{ .Globe.Namespace }}, ServiceName: {{ .Globe.Name }}, Pod: {{`{{ $labels.pod }}`}})"
@@ -132,6 +152,8 @@ spec:
           for: 5m
           labels:
             severity: critical
+            project: zeus
+            subject: middleware
         - alert: MySQLSlaveLaggingBehindMaster
           annotations:
             message: "MySQL instance Slave is lagging behind Master. Please check if Slave threads are running and if there are some performance issues, current_value={{ `{{ $value }}` }}. (Namespace: {{ .Globe.Namespace }}, ServiceName: {{ .Globe.Name }}, Pod: {{`{{ $labels.pod }}`}})"
@@ -142,11 +164,15 @@ spec:
           for: 5m
           labels:
             severity: warning
+            project: zeus
+            subject: middleware
         - alert: MySQLVolumeUsage70
           expr:  (100 * kube_persistentvolumeclaim_info{namespace='{{ .Globe.Namespace }}', persistentvolumeclaim=~"mysql-data-{{ .Globe.Name }}-[0-9]"}) * on(volumename) group_left max(label_replace ((used_size_kb / total_size_kb),"volumename", "$1", "pv", "(.+)")) by (volumename) > 70
           for: 5m
           labels:
             severity: warning
+            project: zeus
+            subject: middleware
           annotations:
             product: harmonycloud
             message: 'The disk usage of MySQL has exceeded 70%, current_value={{ `{{ printf "%.0f" $value }}` }}%.  (Namespace: {{ .Globe.Namespace }}, ServiceName: {{ .Globe.Name }}, Persistentvolumeclaim: {{`{{ $labels.persistentvolumeclaim }}`}})'
@@ -156,6 +182,8 @@ spec:
           for: 5m
           labels:
             severity: critical
+            project: zeus
+            subject: middleware
           annotations:
             product: harmonycloud
             message: 'The disk usage of MySQL has exceeded 85%, current_value={{ `{{ printf "%.0f" $value }}` }}%.  (Namespace: {{ .Globe.Namespace }}, ServiceName: {{ .Globe.Name }}, Persistentvolumeclaim: {{`{{ $labels.persistentvolumeclaim }}`}})'
@@ -167,6 +195,8 @@ spec:
           for: 20s
           labels:
             severity: warning
+            project: zeus
+            subject: middleware
     
         - alert: MySQLWorkingSetMemoryUsageHigh95
           annotations:
@@ -175,6 +205,8 @@ spec:
           for: 5m
           labels:
             severity: warning
+            project: zeus
+            subject: middleware
     
         - alert: MySQLRSSMemoryUsageHigh80
           annotations:
@@ -183,6 +215,8 @@ spec:
           for: 5m
           labels:
             severity: warning
+            project: zeus
+            subject: middleware
     
         - alert: MySQLCpuUsageHigh
           annotations:
@@ -191,6 +225,8 @@ spec:
           for: 5m
           labels:
             severity: warning
+            project: zeus
+            subject: middleware
       {{- if .Values.proxy.enable }}
       - name: proxysql
         rules:
@@ -204,6 +240,8 @@ spec:
           for: 5m
           labels:
             severity: warning
+            project: zeus
+            subject: middleware
         - alert: ProxySqlConnectCheckErr
           annotations:
             message: "MySQL ProxySQL connect check err. (Namespace: {{ .Globe.Namespace }}, ServiceName: {{ .Globe.Name }}, Pod: {{`{{ $labels.pod }}`}})"
@@ -214,6 +252,8 @@ spec:
           for: 5m
           labels:
             severity: warning
+            project: zeus
+            subject: middleware
         - alert: ProxySqlPinCheckErr
           annotations:
             message: "MySQL ProxySQL ping check err. (Namespace: {{ .Globe.Namespace }}, ServiceName: {{ .Globe.Name }}, Pod: {{`{{ $labels.pod }}`}})"
@@ -224,6 +264,8 @@ spec:
           for: 5m
           labels:
             severity: warning
+            project: zeus
+            subject: middleware
         - alert: ProxySqlReadOnlyCheckErr
           annotations:
             message: "MySQL ProxySQL read only check err. (Namespace: {{ .Globe.Namespace }}, ServiceName: {{ .Globe.Name }}, Pod: {{`{{ $labels.pod }}`}})"
@@ -234,6 +276,8 @@ spec:
           for: 5m
           labels:
             severity: warning
+            project: zeus
+            subject: middleware
         - alert: ProxySqlReplicationLagCheckErr
           annotations:
             message: "MySQL ProxySQL replication lag check err. (Namespace: {{ .Globe.Namespace }}, ServiceName: {{ .Globe.Name }}, Pod: {{`{{ $labels.pod }}`}})"
@@ -244,4 +288,6 @@ spec:
           for: 5m
           labels:
             severity: warning
+            project: zeus
+            subject: middleware
     {{- end }}
