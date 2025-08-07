@@ -27,6 +27,8 @@ spec:
               for: 5m
               labels:
                 severity: warning
+                project: zeus
+                subject: operator
                 {{- with .Values.labels }}
                 {{ toYaml . }}
                 {{- end }}
@@ -37,6 +39,8 @@ spec:
               for: 5m
               labels:
                 severity: warning
+                project: zeus
+                subject: operator
                 {{- with .Values.labels }}
                 {{ toYaml . }}
                 {{- end }}
@@ -48,6 +52,8 @@ spec:
               for: 5m
               labels:
                 severity: warning
+                project: zeus
+                subject: operator
                 {{- with .Values.labels }}
                 {{ toYaml . }}
                 {{- end }}
@@ -58,6 +64,8 @@ spec:
               for: 5m
               labels:
                 severity: critical
+                project: zeus
+                subject: operator
                 {{- with .Values.labels }}
                 {{ toYaml . }}
                 {{- end }}
