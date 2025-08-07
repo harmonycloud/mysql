@@ -29,7 +29,7 @@ spec:
           }
           resource: {
             apiversion: "middleware.cn/v1"
-            kind: "Middleware"
+            kind: "MiddlewareOperator"
             name: "{{ .Globe.Name }}"
             namespace: "{{ .Globe.Namespace }}"
           }
