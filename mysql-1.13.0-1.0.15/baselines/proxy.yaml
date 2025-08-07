@@ -34,6 +34,10 @@ spec:
     password: "Hc@Cloud01"
     version: "5.7"
   preActions:
+    - name: pre-mysql-alertrule-labels
+      parameters:
+        labels: {}
+      exposed: false
     - name: pre-mysql-logging
       parameters:
         fileLogging: true
