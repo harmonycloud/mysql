@@ -8,4 +8,4 @@ app:
 owner: harmonycloud # 供应商
 type: db # 类型
 chartType: MySQL
-description: CloudDB MySQL数据库
+description: MySQL数据库
