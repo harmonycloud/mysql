@@ -14,17 +14,27 @@ spec:
     resource:
       mysql:
         limits:
-          cpu: ""
-          memory: ""
+          cpu: '{"type":"string","label":"CPU","required":true,"description":"请输入自定义配额,单位为Core","placeholder":"请输入自定义配额,单位为Core","default":"2"}'
+          memory: '{"type":"string","label":"内存","required":true,"description":"请输入自定义配额,单位为Gi","placeholder":"请输入自定义配额,单位为Gi","default":"4"}'
         requests:
-          cpu: ""
-          memory: ""
-        replicas: "2"
+          cpu: '{"type":"string","label":"CPU","required":true,"description":"请输入自定义配额,单位为Core","placeholder":"请输入自定义配额,单位为Core","default":"2"}'
+          memory: '{"type":"string","label":"内存","required":true,"description":"请输入自定义配额,单位为Gi","placeholder":"请输入自定义配额,单位为Gi","default":"4"}'
+        replicas: '{"type":"int","label":"实例数","required":true,"description":"MySQL集群的节点数量，建议至少2个以保证高可用","default":2,"pattern":"^[1-9]\\d*$","placeholder":"请输入实例数"}'
         volume:
-          size: ""
-          storageClass: ""
-    password: "Hc@Cloud01"
-    version: "8.0.39"
+          size: '{"type":"int","label":"存储大小","required":true,"description":"请输入存储大小","pattern":"^[1-9]\\d*$","placeholder":"请输入存储大小"}'
+          storageClass: '{"type":"storageClass","label":"存储类","required":true,"description":"请选择存储","placeholder":"请选择存储"}'
+    password: '{"type":"password","label":"管理员账号密码","required":true,"description":"MySQL 管理员的初始密码，需包含大小写字母、数字和特殊字符","pattern":"^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[@$!%*#?&])[A-Za-z\\d@$!%*#?&]{8,}$","placeholder":"输入管理员账户密码","default":"Hc@Cloud01"}'
+    version: '{"type":"version","label":"版本","required":true,"default":"8.0.39"}'
+    test1: '{"type":"string","label":"测试字符串","required":false,"description":"这是一个字符串类型的测试字段","placeholder":"请输入测试内容"}'
+    test2: '{"type":"int","label":"测试数字","required":true,"description":"这是一个整数类型的测试字段","pattern":"^\\d{1,5}$","default":"100","placeholder":"输入1-5位数字"}'
+    test3: '{"type":"boolean","label":"测试开关","required":false,"description":"这是一个布尔类型的测试字段","default":"true"}'
+    test4: '{"type":"enum","label":"测试选项","required":true,"description":"这是一个枚举类型的测试字段","options":"选项1,选项2,选项3,选项4","placeholder":"请选择一个选项"}'
+    test5: '{"type":"password","label":"测试密码","required":false,"description":"这是一个密码类型的测试字段","pattern":"^\\w{6,12}$","placeholder":"输入6-12位密码"}'
+    test6: '{"type":"string","label":"测试字符串","required":false,"description":"这是一个字符串类型的测试字段","placeholder":"请输入测试内容"}'
+    test7: '{"type":"int","label":"测试数字","required":true,"description":"这是一个整数类型的测试字段","pattern":"^\\d{1,5}$","default":"100","placeholder":"输入1-5位数字"}'
+    test8: '{"type":"boolean","label":"测试开关","required":false,"description":"这是一个布尔类型的测试字段","default":"true"}'
+    test9: '{"type":"enum","label":"测试选项","required":true,"description":"这是一个枚举类型的测试字段","options":"选项1,选项2,选项3,选项4","placeholder":"请选择一个选项"}'
+    test10: '{"type":"password","label":"测试密码","required":false,"description":"这是一个密码类型的测试字段","pattern":"^\\w{6,12}$","placeholder":"输入6-12位密码"}'
   preActions:
     - name: pre-mysql-alertrule-labels
       parameters:
