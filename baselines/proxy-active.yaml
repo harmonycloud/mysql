@@ -1,0 +1,356 @@
+apiVersion: middleware.cn/v1
+kind: MiddlewareBaseline
+metadata:
+  name: mysql-proxy-active
+  annotations:
+    baselineName: "代理模式"
+    description: "代理模式基线,包含核心功能和必要依赖,适用于快速部署和基本应用场景,稳定可靠,易于扩展和维护."
+    active: "true"
+spec:
+  operatorBaseline:
+    name: mysql-operator-standard
+    gvkName: v1alpha1
+  necessary:
+    repository: ""
+    resource:
+      mysql:
+        limits:
+          cpu: '{"type":"string","label":"CPU","required":true,"description":"请输入自定义配额,单位为Core","placeholder":"请输入自定义配额,单位为Core","default":"2"}'
+          memory: '{"type":"string","label":"内存","required":true,"description":"请输入自定义配额,单位为Gi","placeholder":"请输入自定义配额,单位为Gi","default":"4"}'
+        requests:
+          cpu: '{"type":"string","label":"CPU","required":true,"description":"请输入自定义配额,单位为Core","placeholder":"请输入自定义配额,单位为Core","default":"2"}'
+          memory: '{"type":"string","label":"内存","required":true,"description":"请输入自定义配额,单位为Gi","placeholder":"请输入自定义配额,单位为Gi","default":"4"}'
+        replicas: '{"type":"int","label":"实例数","required":true,"description":"MySQL集群的节点数量，建议至少2个以保证高可用","default":2,"pattern":"^[1-9]\\d*$","placeholder":"请输入实例数"}'
+        volume:
+          size: '{"type":"int","label":"存储大小","required":true,"description":"请输入存储大小","pattern":"^[1-9]\\d*$","placeholder":"请输入存储大小"}'
+          storageClass: '{"type":"storageClass","label":"存储类","required":true,"description":"请选择存储","placeholder":"请选择存储"}'
+      proxy:
+        limits:
+          cpu: '{"type":"string","label":"CPU","required":true,"description":"请输入自定义配额,单位为Core","placeholder":"请输入自定义配额,单位为Core","default":"2"}'
+          memory: '{"type":"string","label":"内存","required":true,"description":"请输入自定义配额,单位为Gi","placeholder":"请输入自定义配额,单位为Gi","default":"4"}'
+        requests:
+          cpu: '{"type":"string","label":"CPU","required":true,"description":"请输入自定义配额,单位为Core","placeholder":"请输入自定义配额,单位为Core","default":"2"}'
+          memory: '{"type":"string","label":"内存","required":true,"description":"请输入自定义配额,单位为Gi","placeholder":"请输入自定义配额,单位为Gi","default":"4"}'
+        replicas: '{"type":"int","label":"实例数","required":true,"description":"MySQL集群的节点数量，建议至少2个以保证高可用","default":3,"pattern":"^[1-9]\\d*$","placeholder":"请输入实例数"}'
+    password: '{"type":"password","label":"管理员账号密码","required":true,"description":"MySQL 管理员的初始密码，需包含大小写字母、数字和特殊字符","pattern":"^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[@$!%*#?&])[A-Za-z\\d@$!%*#?&]{8,}$","placeholder":"输入管理员账户密码","default":"Hc@Cloud01"}'
+    version: '{"type":"version","label":"版本","required":true,"default":"8.0.39"}'
+  preActions:
+    - name: pre-mysql-alertrule-labels
+      parameters:
+        labels: {}
+      exposed: false
+    - name: pre-mysql-logging
+      parameters:
+        fileLogging: true
+        stdoutLogging: true
+        # auditLogging: true
+        slowqueryLogging: true
+      exposed: true
+    - name: pre-mysql-affinity
+      parameters:
+        podAntiAffinityTopologKey: "kubernetes.io/hostname"
+        podAntiAffinity: "soft"
+        nodeAffinity: { }
+      exposed: true
+    - name: pre-mysql-tolerations
+      parameters:
+        tolerations: [ ]
+      fixed: false
+      exposed: true
+  parameters:
+    proxy:
+      enable: true
+      replicaCount: "{{ .Necessary.resource.proxy.replicas }}"
+      resources:
+        limits:
+          cpu: "{{ .Necessary.resource.proxy.limits.cpu }}"
+          memory: "{{ .Necessary.resource.proxy.limits.memory }}"
+        requests:
+          cpu: "{{ .Necessary.resource.proxy.requests.cpu }}"
+          memory: "{{ .Necessary.resource.proxy.requests.memory }}"
+      strategy:
+        type: RollingUpdate
+        rollingUpdate:
+          maxUnavailable: 1
+      securityContext:
+        fsGroup: 0
+      image:
+        repository: "{{ .Necessary.repository }}/proxysql"
+        tag: "2.5.2-1.0.0"
+        pullPolicy: "IfNotPresent"
+      args:
+        # MySQL Variables
+        mysql-max_connections: 2048
+        mysql-max_allowed_packet: 4194304
+        mysql-threads: 2
+        mysql-default_query_delay: 0
+        mysql-default_query_timeout: 36000000
+        mysql-have_compress: true
+        mysql-poll_timeout: 2000
+        mysql-interfaces: "0.0.0.0:6033"
+        mysql-default_schema: "information_schema"
+        mysql-stacksize: 1048576
+        mysql-server_version: "8.0.30"
+        mysql-connect_timeout_server: 3000
+        mysql-ping_interval_server_msec: 15000
+        mysql-ping_timeout_server: 500
+        mysql-commands_stats: true
+        mysql-sessions_sort: true
+        mysql-connect_retries_on_failure: 10
+        mysql-auto_increment_delay_multiplex: 0
+        # MySQL Monitor Variables
+        mysql-monitor_history: 600000
+        mysql-monitor_connect_interval: 5000
+        mysql-monitor_ping_interval: 2000
+        mysql-monitor_read_only_interval: 1500
+        mysql-monitor_read_only_timeout: 500
+        mysql-monitor_slave_lag_when_null: 0
+        # other arges
+        sync_user_period: 600000
+        mysql_query_rules: |
+          (
+            {
+              rule_id=1
+              active=1
+              match_pattern="^SELECT .* FOR UPDATE$"
+              destination_hostgroup=0
+              apply=1
+            },
+            {
+              rule_id=2
+              active=1
+              match_pattern="^SELECT"
+              destination_hostgroup=1
+              apply=1
+            },
+            {
+              rule_id=3
+              active=1
+              match_pattern="SELECT  @@"
+              destination_hostgroup=1
+              apply=1
+            },
+            {
+              rule_id=4
+              active=1
+              match_pattern="show databases"
+              destination_hostgroup=1
+              apply=1
+            },
+          )
+    _statefulset:
+      spec:
+        template:
+          spec:
+            topologySpreadConstraints:
+              - maxSkew: 1
+                topologyKey: "kubernetes.io/hostname"
+                whenUnsatisfiable: ScheduleAnyway
+                labelSelector:
+                  matchLabels:
+                    app: "{{ .Globe.Name }}"
+            securityContext:
+              fsGroup: 0
+    clusterSwitch:
+      switched: false
+    cmName: "{{ .Globe.Name }}-config"
+    businessDeploy:
+      [ ]
+    deployStrategy:
+      basicConfig: { }
+      migration: { }
+      type: AutoDeploy
+    migratePolicy: { }
+    replicas: "{{ .Necessary.resource.mysql.replicas }}"
+    repository: "{{ .Necessary.repository }}/mysql-cluster"
+    secretName: mysql-secret
+    statefulset:
+      configmap: "{{ .Globe.Name }}-config"
+      env:
+        - name: DBNAME
+          value: "{{ .Globe.Name }}"
+        - name: MYSQL_ROOT_PASSWORD
+          value: "{{ .Necessary.password }}"
+        - name: MYSQL_USER_HOST
+          value: "%"
+        - name: MYSQL_ROOT_HOST
+          value: "%"
+      initImage: '{{ .Necessary.repository }}/mysql-init:{{ if eq .Necessary.version "8.0" }}v80-2.0.0{{ else if eq .Necessary.version "8.0.26" }}v80-2.0.0{{ else if eq .Necessary.version "8.0.31" }}v80-2.0.0{{ else if eq .Necessary.version "8.0.39" }}v80-2.0.0{{ else if eq .Necessary.version "5.7.39" }}v57-2.0.0{{ else if eq .Necessary.version "5.7.44" }}v57-2.0.0{{ else }}v57-2.0.0{{ end }}'
+      middlewareImage: '{{ .Necessary.repository }}/mysql-cluster:{{ if eq .Necessary.version "8.0" }}v8.0.26-hc.7{{ else if eq .Necessary.version "8.0.26" }}v8.0.26-hc.7{{ else if eq .Necessary.version "8.0.31" }}v8.0.31-hc.1{{ else if eq .Necessary.version "8.0.39" }}v8.0.39-hc.1{{ else if eq .Necessary.version "5.7.39" }}v5.7.39-hc.2{{ else if eq .Necessary.version "5.7.44" }}v5.7.44-hc.1{{ else }}v5.7.35-hc.5{{ end }}'
+      backupRestoreImage: '{{ .Necessary.repository }}/mysql-xtrabackup:{{ if eq .Necessary.version "8.0" }}v8.0-4{{ else if eq .Necessary.version "8.0.26" }}v8.0-4{{ else if eq .Necessary.version "8.0.31" }}v8.0-4{{ else if eq .Necessary.version "8.0.39" }}v8.0-4{{ else if eq .Necessary.version "5.7.39" }}v1.2.0-hc.8{{ else if eq .Necessary.version "5.7.44" }}v1.2.0-hc.8{{ else }}v1.2.0-hc.8{{ end }}'
+      monitorImage: "{{ .Necessary.repository }}/mysqld-exporter:v0.12.1-1.0.0"
+      logrotateImage: "{{ .Necessary.repository }}/logrotate:3.21.0-1.0.0"
+      imagePullPolicy: IfNotPresent
+      serverPort: 3306
+      nodePort:
+      readOnlyNodePort:
+      hostNetwork: false
+      annotations:
+        fixed-node-middleware-pod: "true"
+        fixed.ipam.harmonycloud.cn: "true"
+      labels:
+        app: "{{ .Globe.Name }}"
+        operatorname: mysql-operator
+      resources:
+        limits:
+          cpu: '"{{ .Necessary.resource.mysql.limits.cpu }}"'
+          memory: '"{{ .Necessary.resource.mysql.limits.memory }}"'
+        requests:
+          cpu: '"{{ .Necessary.resource.mysql.requests.cpu }}"'
+          memory: '"{{ .Necessary.resource.mysql.requests.memory }}"'
+      updateStrategy:
+        type: RollingUpdate
+    type: master-slave
+    syncMode: semi-sync
+    version: "8.0.39"
+    volumeClaimTemplates:
+      - metadata:
+          name: mysql-data
+        spec:
+          accessModes: [ "ReadWriteOnce" ]
+          storageClassName: "{{ .Necessary.resource.mysql.volume.storageClass }}"
+          resources:
+            requests:
+              storage: "{{ .Necessary.resource.mysql.volume.size }}"
+  configurations:
+    - name: mysql-alertrule
+      values:
+        proxy:
+          enable: true
+    - name: mysql-connection-credential
+      values:
+        args:
+          server_port: "{{ .Parameters.statefulset.serverPort }}"
+          root_password: "{{ .Necessary.password }}"
+    - name: mysql-exporter
+      values: { }
+    - name: mysql-initsql-cm
+      values:
+        init_at_setup:
+          enabled: false
+          init_sql: ""
+    - name: mysql-proxy-cm
+      values: { }
+    - name: mysql-replicate
+      values:
+        replication:
+          enabled: false
+          from: { }
+    - name: mysql-sc
+      values:
+        storageClassName: "{{ .Necessary.resource.mysql.volume.storageClass }}"
+    - name: mysql-servicemonitor-exporter
+      values: { }
+    - name: mysql-servicemonitor-proxy
+      values:
+        proxy:
+          enable: true
+    - name: mysql-config
+      values:
+        version: "{{ .Parameters.version }}"
+        resources:
+          limits:
+            memory: '"{{ .Necessary.resource.mysql.limits.memory }}"'
+        replicaCount: "{{ .Necessary.resource.mysql.replicas }}"
+        args:
+          innodb_buffer_pool_size:
+          max_connections:
+          max_user_connections:
+          sql_mode: "NO_ENGINE_SUBSTITUTION,STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,ERROR_FOR_DIVISION_BY_ZERO"
+          query_cache_type:
+          query_cache_size:
+          socket:
+          collation_server: "utf8mb4_general_ci"
+          max_connect_errors:
+          skip_ssl: false
+          max_execution_time:
+          group_concat_max_len:
+          lock_wait_timeout:
+          lower_case_table_names:
+          thread_cache_size:
+          disabled_storage_engines:
+          character_set_server: "utf8mb4"
+          transaction_isolation:
+          skip_name_resolve:
+          explicit_defaults_for_timestamp:
+          log_timestamps:
+          local_infile:
+          event_scheduler:
+          lc_messages:
+          slow_query_log: "ON"
+          long_query_time:
+          log_queries_not_using_indexes:
+          log_throttle_queries_not_using_indexes:
+          general_log:
+          expire_logs_days:
+          sync_binlog:
+          max_binlog_size:
+          binlog_format:
+          binlog_rows_query_log_events:
+          binlog_cache_size:
+          binlog_stmt_cache_size:
+          max_binlog_cache_size:
+          max_binlog_stmt_cache_size:
+          max_relay_log_size:
+          relay_log_purge:
+          relay_log_recovery:
+          sync_master_info:
+          slave_parallel_workers:
+          read_buffer_size:
+          read_rnd_buffer_size:
+          sort_buffer_size:
+          join_buffer_size:
+          tmp_table_size:
+          max_allowed_packet:
+          max_heap_table_size:
+          connect_timeout:
+          wait_timeout: 600
+          interactive_timeout: 600
+          net_read_timeout:
+          net_write_timeout:
+          skip_external_locking:
+          key_buffer_size:
+          bulk_insert_buffer_size:
+          concurrent_insert:
+          open_files_limit:
+          table_open_cache:
+          table_definition_cache:
+          innodb_log_file_size:
+          innodb_log_files_in_group:
+          innodb_undo_log_truncate:
+          innodb_max_undo_log_size:
+          innodb_undo_tablespaces:
+          innodb_flush_log_at_trx_commit: 2
+          innodb_fast_shutdown:
+          innodb_flush_method:
+          innodb_io_capacity:
+          innodb_io_capacity_max:
+          innodb_log_buffer_size:
+          innodb_autoinc_lock_mode:
+          innodb_buffer_pool_load_at_startup:
+          innodb_buffer_pool_dump_at_shutdown:
+          innodb_buffer_pool_dump_pct:
+          innodb_max_dirty_pages_pct:
+          innodb_lock_wait_timeout:
+          innodb_old_blocks_time:
+          innodb_open_files:
+          innodb_page_cleaners:
+          innodb_strict_mode:
+          innodb_thread_concurrency:
+          innodb_sort_buffer_size:
+          innodb_print_all_deadlocks:
+          innodb_rollback_on_timeout:
+          innodb_adaptive_hash_index:
+          performance_schema_max_table_instances:
+          audit_record_cmds: "create_db,create_table,create_user,create_index,drop_db,drop_table,drop_user,drop_index,alter_user,alert_table,truncate,revoke,rename_table,insert,update,delete,lock_tables,unlock_tables"
+          audit_whitelist_cmds:
+        additionArgs:
+        features:
+          threadpool:
+            enabled: false
+          recycle:
+            enabled: false
+          bufferpoolControl:
+            enabled: false
+          auditLog:
+            enabled: false
