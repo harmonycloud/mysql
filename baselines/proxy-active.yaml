@@ -21,9 +21,7 @@ spec:
           cpu: '{"type":"string","label":"CPU","required":true,"description":"请输入自定义配额,单位为Core","placeholder":"请输入自定义配额,单位为Core","default":"2"}'
           memory: '{"type":"string","label":"内存","required":true,"description":"请输入自定义配额,单位为Gi","placeholder":"请输入自定义配额,单位为Gi","default":"4"}'
         replicas: '{"type":"int","label":"实例数","required":true,"description":"MySQL集群的节点数量，建议至少2个以保证高可用","default":2,"pattern":"^[1-9]\\d*$","placeholder":"请输入实例数"}'
-        volume:
-          size: '{"type":"int","label":"存储大小","required":true,"description":"请输入存储大小","pattern":"^[1-9]\\d*$","placeholder":"请输入存储大小"}'
-          storageClass: '{"type":"storageClass","label":"存储类","required":true,"description":"请选择存储","placeholder":"请选择存储"}'
+        volumes: ""
       proxy:
         limits:
           cpu: '{"type":"string","label":"CPU","required":true,"description":"请输入自定义配额,单位为Core","placeholder":"请输入自定义配额,单位为Core","default":"2"}'
@@ -208,10 +206,10 @@ spec:
           name: mysql-data
         spec:
           accessModes: [ "ReadWriteOnce" ]
-          storageClassName: "{{ .Necessary.resource.mysql.volume.storageClass }}"
+          storageClassName: '{{ range .Necessary.resource.mysql.volumes }}{{ .storageClass }}{{ if not (last .Necessary.resource.mysql.volumes) }},{{ end }}{{ end }}'
           resources:
             requests:
-              storage: "{{ .Necessary.resource.mysql.volume.size }}"
+              storage: '{{ index .Necessary.resource.mysql.volumes 0 "size" }}'
   configurations:
     - name: mysql-alertrule
       values:
