@@ -128,7 +128,7 @@ spec:
           name: mysql-data
         spec:
           accessModes: [ "ReadWriteOnce" ]
-          storageClassName: '{{ range .Necessary.resource.mysql.volumes }}{{ .storageClass }}{{ if not (last .Necessary.resource.mysql.volumes) }},{{ end }}{{ end }}'
+          storageClassName: '{{ range .Necessary.resource.mysql.volumes }}{{ .storageClass }}{{ if not (last $.Necessary.resource.mysql.volumes) }},{{ end }}{{ end }}'
           resources:
             requests:
               storage: '{{ index .Necessary.resource.mysql.volumes 0 "size" }}'
