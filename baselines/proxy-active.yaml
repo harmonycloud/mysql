@@ -5,7 +5,7 @@ metadata:
   annotations:
     baselineName: "代理模式"
     description: "代理模式基线,包含核心功能和必要依赖,适用于快速部署和基本应用场景,稳定可靠,易于扩展和维护."
-    active: "true"
+    active: "2"
 spec:
   operatorBaseline:
     name: mysql-operator-standard
