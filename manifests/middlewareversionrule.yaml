@@ -1,0 +1,12 @@
+mainVersionGroups:
+  "5.x":
+    - "5.7.44"
+    - "5.7.35"
+  "8.x":
+    - "8.0.39"
+
+crossUpgradeRules:
+  "5.x":
+    - "5.x"
+  "8.x":
+    - "8.x"
