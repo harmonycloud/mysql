@@ -3,7 +3,7 @@ kind: MiddlewareActionBaseline
 metadata:
   name: mysql-restart
 spec:
-  baselineType: "NormalAction"
+  baselineType: "OpsAction"
   actionType: "restart"
   necessary:
     namespace: "string"

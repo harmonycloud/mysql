@@ -30,7 +30,16 @@ spec:
         requests:
           cpu: '{"type":"string","label":"CPU","required":true,"description":"请输入自定义配额,单位为Core","placeholder":"请输入自定义配额,单位为Core","default":"2"}'
           memory: '{"type":"string","label":"内存","required":true,"description":"请输入自定义配额,单位为Gi","placeholder":"请输入自定义配额,单位为Gi","default":"4"}'
-    password: '{"type":"password","label":"管理员账号密码","required":true,"description":"管理员的初始密码","placeholder":"输入管理员账户密码","default":"Hc@Cloud01"}'
+    password: |
+      {
+        "type": "password",
+        "label": "管理员账号密码",
+        "required": true,
+        "description": "请输入由英文字母、数字或特殊字符“/、~、%、_、.”组成的密码信息",
+        "placeholder": "输入管理员账户密码",
+        "default": "Hc@Cloud01",
+        "pattern": "^[^!&|;$\\'\"><*?`(){}@#]*$"
+       }
     version: '{"type":"version","label":"版本","required":true,"default":"8.0.39"}'
   preActions:
     - name: pre-mysql-alertrule-labels
