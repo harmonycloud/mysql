@@ -2,6 +2,8 @@ apiVersion: middleware.cn/v1
 kind: MiddlewareActionBaseline
 metadata:
   name: mysql-failover
+  annotations:
+    alias: "主从切换"
 spec:
   baselineType: "OpsAction"
   actionType: "failover"

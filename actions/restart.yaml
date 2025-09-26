@@ -2,6 +2,8 @@ apiVersion: middleware.cn/v1
 kind: MiddlewareActionBaseline
 metadata:
   name: mysql-restart
+  annotations:
+    alias: "实例重启"
 spec:
   baselineType: "OpsAction"
   actionType: "restart"
