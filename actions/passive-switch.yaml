@@ -2,6 +2,8 @@ apiVersion: middleware.cn/v1
 kind: MiddlewareActionBaseline
 metadata:
   name: mysql-passive-switch
+  nnotations:
+    alias: "自动切换"
 spec:
   baselineType: "NormalAction"
   actionType: "passive-switch"
