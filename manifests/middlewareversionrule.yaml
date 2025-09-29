@@ -10,3 +10,7 @@ crossUpgradeRules:
     - "5.x"
   "8.x":
     - "8.x"
+crossDowngradeRules:
+  "5.x":
+    - "5.x"
+  "8.x": []
