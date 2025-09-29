@@ -5,7 +5,7 @@ metadata:
   nnotations:
     alias: "自动切换"
 spec:
-  baselineType: "NormalAction"
+  baselineType: "OpsAction"
   actionType: "passive-switch"
   necessary:
     passiveSwitched: "bool"
