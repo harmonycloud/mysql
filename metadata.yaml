@@ -2,9 +2,9 @@ name: MySQL # 中间件类型
 version: 1.13.0-1.2.0
 app:
   version: # 中间件支持版本
-    - 8.0.39
-    - 5.7.44
-    - 5.7.35
+    - "8.0.39"
+    - "5.7.44"
+    - "5.7.35"
 owner: harmonycloud # 供应商
 type: db # 类型
 chartType: MySQL
