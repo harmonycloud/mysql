@@ -18,6 +18,6 @@ spec:
           - "mid"
           - "{{ .Globe.MiddlewareName }}"
           - "-n"
-          - "{{ .Necessary.Namespace }}"
+          - "{{ .Globe.Namespace }}"
           - "--type='json'"
           - '-p=''[{"op": "replace", "path": "/spec/parameters/passiveSwitched", "value": {{ .Necessary.passiveSwitched }} }]'''
