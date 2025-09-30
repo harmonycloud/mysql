@@ -8,7 +8,7 @@ spec:
   baselineType: "OpsAction"
   actionType: "passive-switch"
   necessary:
-    passiveSwitched: '{"type":"boolean","label":"是否开启自动切换","required":true,"default":true,"visible":true}'
+    passiveSwitched: '{"type":"boolean","label":"是否关闭自动切换","required":true,"default":false,"visible":true}'
   steps:
     - name: passive-switch
       cmd:
