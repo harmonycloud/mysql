@@ -15,9 +15,9 @@ spec:
         command:
           - "kubectl"
           - "patch"
-          - "mc"
+          - "mid"
           - "{{ .Globe.MiddlewareName }}"
           - "-n"
-          - "{{ .Necessary.namespace }}"
+          - "{{ .Necessary.Namespace }}"
           - "--type='json'"
-          - '-p=''[{"op": "replace", "path": "/spec/passiveSwitched", "value": {{ .Necessary.passiveSwitched }} }]'''
+          - '-p=''[{"op": "replace", "path": "/spec/parameters/passiveSwitched", "value": {{ .Necessary.passiveSwitched }} }]'''
