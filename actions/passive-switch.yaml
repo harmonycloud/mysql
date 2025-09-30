@@ -20,4 +20,4 @@ spec:
           - "-n"
           - "{{ .Globe.Namespace }}"
           - "--type='json'"
-          - '-p=''[{"op": "replace", "path": "/spec/parameters/passiveSwitched", "value": {{ .Necessary.passiveSwitched }} }]'''
+          - '-p=''[{"op": "add", "path": "/spec/parameters", "value": {},{"op": "replace", "path": "/spec/parameters/passiveSwitched", "value": {{ .Necessary.passiveSwitched }} }]'''
