@@ -3,7 +3,7 @@ kind: MiddlewareBaseline
 metadata:
   name: mysql-proxy-active
   annotations:
-    baselineName: "代理模式"
+    baselineName: "代理模式-双活"
     description: "代理模式基线,包含核心功能和必要依赖,适用于快速部署和基本应用场景,稳定可靠,易于扩展和维护."
     active: "2"
 spec:

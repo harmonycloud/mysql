@@ -3,7 +3,7 @@ kind: MiddlewareBaseline
 metadata:
   name: mysql-master-slave-active
   annotations:
-    baselineName: "主从模式"
+    baselineName: "主从模式-双活"
     description: "主从模式基线,包含核心功能和必要依赖,适用于快速部署和基本应用场景,稳定可靠,易于扩展和维护."
     active: "2"
 spec:
