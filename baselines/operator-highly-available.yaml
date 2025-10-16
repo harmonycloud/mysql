@@ -14,13 +14,13 @@ spec:
   globe:
     repository: "10.10.101.172:443"
     project: "middleware"
-    resource:
-      limits:
-        cpu: "500m"
-        memory: "500Mi"
-      requests:
-        cpu: "100m"
-        memory: "250Mi"
+    # resource:
+    #   limits:
+    #     cpu: "500m"
+    #     memory: "500Mi"
+    #   requests:
+    #     cpu: "100m"
+    #     memory: "250Mi"
   preActions:
     - name: pre-mysql-operator-alertrule-labels
       parameters:
@@ -223,11 +223,11 @@ spec:
                 timeoutSeconds: 5
               resources:
                 limits:
-                  cpu: '"{{ .Globe.resource.limits.cpu }}"'
-                  memory: '"{{ .Globe.resource.limits.memory }}"'
+                  cpu: 200m
+                  memory: 512Mi
                 requests:
-                  cpu: '"{{ .Globe.resource.requests.cpu }}"'
-                  memory: '"{{ .Globe.resource.requests.memory }}"'
+                  cpu: 100m
+                  memory: 256Mi
               volumeMounts:
                 - mountPath: /resource/proxysql-cluster/templates/
                   name: resource
