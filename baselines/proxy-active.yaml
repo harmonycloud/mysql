@@ -41,6 +41,12 @@ spec:
        }
     version: '{"type":"version","label":"版本","required":true,"default":"8.0.39"}'
   preActions:
+    - name: pre-mysql-heimdallr-hdpool
+      parameters:
+        networkCardList: [ ]
+        annotations: { }
+      fixed: false
+      exposed: true
     - name: pre-mysql-alertrule-labels
       parameters:
         labels: {}
