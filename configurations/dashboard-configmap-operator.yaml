@@ -5435,6 +5435,8 @@ spec:
           "timezone": "browser",
           "title": "MySQL Overview",
           "uid": "uaKUl7_Mk",
+          "dataServiceSort": 1,
+          "supportedBaselines": ["mysql-master-slave", "mysql-master-slave-active"],
           "version": 2
         }
       ProxySQL-Fleet.json: |-
@@ -7238,5 +7240,7 @@ spec:
           "timezone": "",
           "title": "ProxySQL Fleet Overview",
           "uid": "cBk_ZGpGz1",
+          "dataServiceSort": 2,
+          "supportedBaselines": ["mysql-proxy", "mysql-proxy-active","mysql-master-slave", "mysql-master-slave-active"],
           "version": 5
         }`}}
