@@ -18,7 +18,7 @@ spec:
         parameters: {
           spec: {
             parameters: {
-              {{- if .Necessary.annotation }}
+              {{- if .Necessary.annotations }}
                 statefulset: {
                   {{- with .Necessary.annotations }}
                   annotations: {{ toCue . }}
