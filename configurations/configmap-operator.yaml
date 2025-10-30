@@ -99,6 +99,8 @@ spec:
         kind: Deployment
         metadata:
           name: {{ include "proxysql.fullname" . }}
+          annotations:
+        {{- toYaml .Values.annotations | nindent 4 }}
           labels:
         {{ include "proxysql.labels" . | indent 4 }}
         spec:
@@ -116,6 +118,8 @@ spec:
               labels:
                 app.kubernetes.io/name: {{ include "proxysql.name" . }}
                 app.kubernetes.io/instance: {{ .Release.Name }}
+              annotations:
+            {{- toYaml .Values.annotations | nindent 8 }}
             spec:
             {{- with .Values.securityContext}}
               securityContext:
