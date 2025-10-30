@@ -23,6 +23,11 @@ spec:
                   {{- with .Necessary.annotations }}
                   annotations: {{ toCue . }}
                   {{- end }}
+                },
+                proxy: {
+                  {{- with .Necessary.annotations }}
+                  annotations: {{ toCue . }}
+                  {{- end }}
                 }
               {{- end }}
             }
