@@ -42,7 +42,7 @@ spec:
           {{- end }}
         }
         
-        {{ $name := include "mysql.fullname" . }}
+        {{ $name := .Globe.Name }}
         
         # defines all the MySQL servers
         mysql_servers =
