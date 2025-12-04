@@ -67,7 +67,7 @@ spec:
                 }
               {{- end }}
               }
-              _statefulset: {
+              "_statefulset": {
                 spec: {
                   template: {
                     spec: {
