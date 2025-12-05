@@ -25,11 +25,8 @@ spec:
         expose: true
       cmd:
         command:
-          - "echo"
-          - '"{{ .Step.getSlaveNames.output }}"'
-          - "|"
-          - "awk"
-          - '''{print $1}'''
+          - |
+            echo "{{ .Step.getSlaveNames.output }}" | awk '{print $1}'
     - name: getSyncSlave
       output:
         type: "string"
