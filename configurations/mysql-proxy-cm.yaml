@@ -63,7 +63,7 @@ spec:
         #defines MySQL Query Rules
         
         mysql_query_rules:
-        {{ .Values.proxy.args.mysql_query_rules | indent 2}}
+    {{ .Values.proxy.args.mysql_query_rules | indent 4}}
         
         
         scheduler=

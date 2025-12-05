@@ -15,24 +15,24 @@ spec:
     resource:
       mysql:
         limits:
-          cpu: '{"type":"string","label":"CPU","required":true,"description":"请输入自定义配额,单位为Core","placeholder":"请输入自定义配额,单位为Core","default":"2"}'
-          memory: '{"type":"string","label":"内存","required":true,"description":"请输入自定义配额,单位为Gi","placeholder":"请输入自定义配额,单位为Gi","default":"4"}'
+          cpu: '{"type":"string","label":"CPU","required":true,"description":"Please enter a custom quota, the unit is `Core`","placeholder":"Please enter a custom quota, the unit is `Core`","default":"2"}'
+          memory: '{"type":"string","label":"Memory","required":true,"description":"Please enter a custom quota, the unit is `Gi`","placeholder":"Please enter a custom quota, the unit is `Gi`","default":"4"}'
         requests:
-          cpu: '{"type":"string","label":"CPU","required":true,"description":"请输入自定义配额,单位为Core","placeholder":"请输入自定义配额,单位为Core","default":"2"}'
-          memory: '{"type":"string","label":"内存","required":true,"description":"请输入自定义配额,单位为Gi","placeholder":"请输入自定义配额,单位为Gi","default":"4"}'
-        replicas: '{"type":"int","label":"实例数","required":true,"description":"MySQL集群的节点数量，节点数为2或4","default":2,"pattern":"^(2|4)$","placeholder":"请输入实例数"}'
+          cpu: '{"type":"string","label":"CPU","required":true,"description":"Please enter a custom quota, the unit is `Core`","placeholder":"Please enter a custom quota, the unit is `Core`","default":"2"}'
+          memory: '{"type":"string","label":"Memory","required":true,"description":"Please enter a custom quota, the unit is `Gi`","placeholder":"Please enter a custom quota, the unit is `Gi`","default":"4"}'
+        replicas: '{"type":"int","label":"Replicas","required":true,"description":"Number of nodes in the MySQL cluster is 2 or 4","default":2,"pattern":"^(2|4)$","placeholder":"Please enter the number of instances"}'
         volumes: ""
     password: |
       {
         "type": "password",
-        "label": "管理员账号密码",
+        "label": "AdminPassword",
         "required": true,
-        "description": "请输入由英文字母、数字或特殊字符“/、~、%、_、.”组成的密码信息",
-        "placeholder": "输入管理员账户密码",
+        "description": "Please enter a password consisting of English letters, numbers, or special characters /, ~, %, _, .",
+        "placeholder": "Enter your admin password",
         "default": "Hc@Cloud01",
         "pattern": "^[^!&|;$\\'\"><*?`(){}@#]*$"
        }
-    version: '{"type":"version","label":"版本","required":true,"default":"8.0.39"}'
+    version: '{"type":"version","label":"Version","required":true,"default":"8.0.39"}'
   preActions:
     - name: pre-mysql-heimdallr-hdpool
       parameters:

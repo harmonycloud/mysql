@@ -3,7 +3,7 @@ kind: MiddlewareActionBaseline
 metadata:
   name: mysql-failover
   annotations:
-    alias: "主从切换"
+    alias: "MasterSlaveSwitchover"
 spec:
   baselineType: "OpsAction"
   actionType: "failover"

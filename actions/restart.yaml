@@ -3,7 +3,7 @@ kind: MiddlewareActionBaseline
 metadata:
   name: mysql-restart
   annotations:
-    alias: "服务重启"
+    alias: "Restart"
 spec:
   baselineType: "OpsAction"
   actionType: "restart"
