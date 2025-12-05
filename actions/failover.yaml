@@ -46,4 +46,9 @@ spec:
     - name: failover
       cmd:
         command:
-          - "{{ if semverCompare '< 1.8.20' .Step.getVersion.output }}kubectl patch mc {{ .Globe.MiddlewareName }} -n {{ .Necessary.namespace }} -type=merge -p {\"spec\":{\"clusterSwitch\":{\"switched\":false,\"finished\":false,\"master\":\"{{ .Step.getSlaveName.output }}\"}}} {{ else }} kubectl exec {{ .Step.getSyncSlave.output }} -n {{ .Necessary.namespace }} -c mysql -- bash -c \"curl -s -X POST -w '''\n%{http_code}\n''' http://mysql-operator.middleware-operator:8080/failover -d '''{\"candidate\": \"'{{ .Step.getSyncSlave.output }}'\",\"namespace\":\"'{{ .Necessary.namespace }}'\",\"name\":\"'{{ .Globe.MiddlewareName }}'\"}'''\" {{ end }}"
+          - |
+            {{ if semverCompare "< 1.8.20" .Step.getVersion.output }}
+            kubectl patch mc {{ .Globe.MiddlewareName }} -n {{ .Necessary.namespace }} -type=merge -p {"spec":{"clusterSwitch":{"switched":false,"finished":false,"master":"{{ .Step.getSlaveName.output }}"}}}
+            {{ else }}
+            kubectl exec {{ .Step.getSyncSlave.output }} -n {{ .Necessary.namespace }} -c mysql -- bash -c "curl -s -X POST -w '''\n%{http_code}\n''' http://mysql-operator.middleware-operator:8080/failover -d '''{\"candidate\": \"'{{ .Step.getSyncSlave.output }}'\",\"namespace\":\"'{{ .Necessary.namespace }}'\",\"name\":\"'{{ .Globe.MiddlewareName }}'\"}'''"
+            {{ end }}
