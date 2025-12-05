@@ -3,12 +3,12 @@ kind: MiddlewareActionBaseline
 metadata:
   name: mysql-passive-switch
   annotations:
-    alias: "自动切换"
+    alias: "Automatic switch"
 spec:
   baselineType: "OpsAction"
   actionType: "passive-switch"
   necessary:
-    passiveSwitched: '{"type":"boolean","label":"是否关闭自动切换","required":true,"default":false,"visible":true}'
+    passiveSwitched: '{"type":"boolean","label":"Turn off automatic switching?","required":true,"default":false,"visible":true}'
   steps:
     - name: passive-switch
       cmd:

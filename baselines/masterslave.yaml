@@ -3,8 +3,8 @@ kind: MiddlewareBaseline
 metadata:
   name: mysql-master-slave
   annotations:
-    baselineName: "主从模式"
-    description: "主从模式基线,包含核心功能和必要依赖,适用于快速部署和基本应用场景,稳定可靠,易于扩展和维护."
+    baselineName: "Master-Slave mode"
+    description: "Master-Slave Mode Baseline, incorporating core functionality and essential dependencies, is tailored for rapid deployment and fundamental application scenarios. It delivers stable and reliable performance, and is designed for ease of extension and maintenance."
 spec:
   operatorBaseline:
     name: mysql-operator-standard
@@ -14,26 +14,26 @@ spec:
     resource:
       mysql:
         limits:
-          cpu: '{"type":"string","label":"CPU","required":true,"description":"请输入自定义配额,单位为Core","placeholder":"请输入自定义配额,单位为Core","default":"2"}'
-          memory: '{"type":"string","label":"内存","required":true,"description":"请输入自定义配额,单位为Gi","placeholder":"请输入自定义配额,单位为Gi","default":"4"}'
+          cpu: '{"type":"string","label":"CPU","required":true,"description":"Please enter a custom quota, the unit is `Core`","placeholder":"Please enter a custom quota, the unit is `Core`","default":"2"}'
+          memory: '{"type":"string","label":"Memory","required":true,"description":"Please enter a custom quota, the unit is `Gi`","placeholder":"Please enter a custom quota, the unit is `Gi`","default":"4"}'
         requests:
-          cpu: '{"type":"string","label":"CPU","required":true,"description":"请输入自定义配额,单位为Core","placeholder":"请输入自定义配额,单位为Core","default":"2"}'
-          memory: '{"type":"string","label":"内存","required":true,"description":"请输入自定义配额,单位为Gi","placeholder":"请输入自定义配额,单位为Gi","default":"4"}'
-        replicas: '{"type":"int","label":"实例数","required":true,"description":"MySQL集群的节点数量，节点数范围2至5","default":2,"pattern":"^[2-5]$","placeholder":"请输入实例数"}'
+          cpu: '{"type":"string","label":"CPU","required":true,"description":"Please enter a custom quota, the unit is `Core`","placeholder":"Please enter a custom quota, the unit is `Core`","default":"2"}'
+          memory: '{"type":"string","label":"Memory","required":true,"description":"Please enter a custom quota, the unit is `Gi`","placeholder":"Please enter a custom quota, the unit is `Gi`","default":"4"}'
+        replicas: '{"type":"int","label":"Replicas","required":true,"description":"Number of nodes in the MySQL cluster, with a range of 2 to 5 nodes","default":2,"pattern":"^[2-5]$","placeholder":"Please enter the number of instances  "}'
         volume:
-          size: '{"type":"int","label":"存储大小","required":true,"description":"请输入存储大小","pattern":"^[1-9]\\d*$","placeholder":"请输入存储大小"}'
-          storageClass: '{"type":"storageClass","label":"存储类","required":true,"description":"请选择存储","placeholder":"请选择存储"}'
+          size: '{"type":"int","label":"StorageSize","required":true,"description":"Please enter the storage size","pattern":"^[1-9]\\d*$","placeholder":"Please enter the storage size"}'
+          storageClass: '{"type":"storageClass","label":"StorageClass","required":true,"description":"Please select storage","placeholder":"Please select storage"}'
     password: |
       {
         "type": "password",
-        "label": "管理员账号密码",
+        "label": "AdminPassword",
         "required": true,
-        "description": "请输入由英文字母、数字或特殊字符“/、~、%、_、.”组成的密码信息",
-        "placeholder": "输入管理员账户密码",
+        "description": "Please enter a password consisting of English letters, numbers, or special characters /, ~, %, _, .",
+        "placeholder": "Enter your admin password",
         "default": "Hc@Cloud01",
         "pattern": "^[^!&|;$\\'\"><*?`(){}@#]*$"
        }
-    version: '{"type":"version","label":"版本","required":true,"default":"8.0.39"}'
+    version: '{"type":"version","label":"Version","required":true,"default":"8.0.39"}'
   preActions:
     - name: pre-mysql-heimdallr-hdpool
       parameters:
