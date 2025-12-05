@@ -42,7 +42,7 @@ spec:
       cmd:
         command:
           - |
-            kubectl get mid {{ .Globe.MiddlewareName }} -n {{ .Necessary.namespace }} -o jsonpath='{.spec.parameters.version}'
+            kubectl get mid {{ .Globe.MiddlewareName }} -n {{ .Necessary.namespace }} -o jsonpath='{.spec.necessary.version}'
     - name: failover
       cmd:
         command:
