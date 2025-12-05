@@ -17,14 +17,8 @@ spec:
         expose: true
       cmd:
         command:
-          - "kubectl"
-          - "get"
-          - "mid"
-          - "-n"
-          - "{{ .Necessary.namespace }}"
-          - "{{ .Globe.MiddlewareName }}"
-          - "-o"
-          - "jsonpath={.spec.customResources.include.pods[?(@.type==\"slave\")].name}"
+          - |
+            kubectl get mid {{ .Globe.MiddlewareName }} -n {{ .Necessary.namespace }} -o jsonpath='{.status.customResources.include.pods[?(@.type=="slave")].name}'
     - name: getSlaveName
       output:
         type: "string"
@@ -42,28 +36,16 @@ spec:
         expose: true
       cmd:
         command:
-          - "kubectl"
-          - "get"
-          - "mid"
-          - "-n"
-          - "{{ .Necessary.namespace }}"
-          - "{{ .Globe.MiddlewareName }}"
-          - "-o"
-          - "jsonpath={.spec.customResources.include.pods[?(@.type==\"SyncSlave\")].name}"
+          - |
+            kubectl get mid {{ .Globe.MiddlewareName }} -n {{ .Necessary.namespace }} -o jsonpath='{.status.customResources.include.pods[?(@.type=="SyncSlave")].name}'
     - name: getVersion
       output:
         type: "string"
         expose: true
       cmd:
         command:
-          - "kubectl"
-          - "get"
-          - "mid"
-          - "-n"
-          - "{{ .Necessary.namespace }}"
-          - "{{ .Globe.MiddlewareName }}"
-          - "-o"
-          - "jsonpath={.spec.parameters.version}"
+          - |
+            kubectl get mid {{ .Globe.MiddlewareName }} -n {{ .Necessary.namespace }} -o jsonpath='{.spec.parameters.version}'
     - name: failover
       cmd:
         command:
