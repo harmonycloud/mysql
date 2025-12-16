@@ -29,7 +29,7 @@ spec:
         "required": true,
         "description": "Please enter a password consisting of English letters, numbers, or special characters /, ~, %, _, .",
         "placeholder": "Enter your admin password",
-        "pattern": "^[^!&|;$\\'\"><*?`(){}@#]*$"
+        "pattern": "^[A-Za-z0-9~_./%]*$"
        }
     version: '{"type":"version","label":"Version","required":true,"default":"8.0.39"}'
   preActions:
