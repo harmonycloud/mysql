@@ -237,6 +237,8 @@ spec:
                 name: "{{ .Globe.Name }}-mysql-operator-resource"
           serviceAccount: "{{ .Globe.Name }}-mysql-operator"
   configurations:
+    - name: "mysql-operator-service"
+      values: {}
     - name: "crd-mysqlbackup"
       values: {}
     - name: "crd-mysqlbackupschedules"
