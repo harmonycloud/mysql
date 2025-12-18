@@ -4,6 +4,7 @@ metadata:
   name: mysql-alertrule
 spec:
   template: |
+    {{- if  .Capabilities.APIVersions.Has "monitoring.coreos.com/v1" }}
     apiVersion: monitoring.coreos.com/v1
     kind: PrometheusRule
     metadata:
@@ -356,4 +357,5 @@ spec:
             {{- with .Values.labels }}
             {{- toYaml . | nindent 8 }}
             {{- end }}
+    {{- end }}
     {{- end }}
