@@ -1,11 +1,11 @@
 baselineName:
   - name: "Master-Slave mode"
     name-zh: "主从模式"
-  - name: "Master-Slave mode A/A"
+  - name: "Master-Slave mode A-A"
     name-zh: "主从模式-双活"
   - name: "Proxy"
     name-zh: "代理模式"
-  - name: "Proxy mode A/A"
+  - name: "Proxy mode A-A"
     name-zh: "代理模式-双活"
   - name: "Standard"
     name-zh: "标准版"
