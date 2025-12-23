@@ -4,6 +4,7 @@ metadata:
   name: mysql-servicemonitor-exporter
 spec:
   template: |
+    {{- if  .Capabilities.APIVersions.Has "monitoring.coreos.com/v1" }}
     apiVersion: monitoring.coreos.com/v1
     kind: ServiceMonitor
     metadata:
@@ -25,3 +26,4 @@ spec:
       selector:
         matchLabels:
           k8s-app: {{ .Globe.Name }}-exporter
+    {{- end }}
