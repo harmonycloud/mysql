@@ -8,7 +8,7 @@ spec:
   baselineType: "OpsAction"
   actionType: "passive-switch"
   necessary:
-    passiveSwitched: '{"type":"boolean","label":"Turn off automatic switching?","required":true,"default":false,"visible":true}'
+    passiveSwitched: '{"type":"boolean","label":"Automatic switch","required":true,"default":false,"visible":true}'
   steps:
     - name: passive-switch
       cmd:
