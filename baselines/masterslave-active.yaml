@@ -15,11 +15,11 @@ spec:
     resource:
       mysql:
         limits:
-          cpu: '{"type":"string","label":"CPU","required":true,"description":"Please enter a custom quota, the unit is `Core`","placeholder":"Please enter a custom quota, the unit is `Core`","default":"2"}'
-          memory: '{"type":"string","label":"Memory","required":true,"description":"Please enter a custom quota, the unit is `Gi`","placeholder":"Please enter a custom quota, the unit is `Gi`","default":"4"}'
+          cpu: '{"type":"string","label":"CPU","required":true,"description":"Please enter a custom quota, the unit is `Core`","placeholder":"Please enter a custom quota, the unit is `Core`","default":"2","pattern":"^(?!0$)(?!0\\d)\\d+(\\.\\d)?$","min":0.1}'
+          memory: '{"type":"string","label":"Memory","required":true,"description":"Please enter a custom quota, the unit is `Gi`","placeholder":"Please enter a custom quota, the unit is `Gi`","default":"4","pattern":"^(?!0$)(?!0\\d)\\d+(\\.\\d)?$","min":0.1}'
         requests:
-          cpu: '{"type":"string","label":"CPU","required":true,"description":"Please enter a custom quota, the unit is `Core`","placeholder":"Please enter a custom quota, the unit is `Core`","default":"2"}'
-          memory: '{"type":"string","label":"Memory","required":true,"description":"Please enter a custom quota, the unit is `Gi`","placeholder":"Please enter a custom quota, the unit is `Gi`","default":"4"}'
+          cpu: '{"type":"string","label":"CPU","required":true,"description":"Please enter a custom quota, the unit is `Core`","placeholder":"Please enter a custom quota, the unit is `Core`","default":"2","pattern":"^(?!0$)(?!0\\d)\\d+(\\.\\d)?$","min":0.1}'
+          memory: '{"type":"string","label":"Memory","required":true,"description":"Please enter a custom quota, the unit is `Gi`","placeholder":"Please enter a custom quota, the unit is `Gi`","default":"4","pattern":"^(?!0$)(?!0\\d)\\d+(\\.\\d)?$","min":0.1}'
         replicas: '{"type":"int","label":"Replicas","required":true,"description":"Number of nodes in the MySQL cluster is 2 or 4","default":2,"pattern":"^(2|4)$","placeholder":"Please enter the number of instances"}'
         volumes: ""
     password: |
