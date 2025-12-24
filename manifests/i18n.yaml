@@ -41,6 +41,8 @@ description:
     name-zh: "请选择存储"
   - name: "Please enter a password consisting of English letters, numbers, or the special characters \"/, ~, %, _, .\""
     name-zh: "请输入由英文字母、数字或特殊字符“/、~、%、_、.”组成的密码信息"
+  - name: "Minimum storage size is 5"
+    name-zh: "存储大小最低为5"
 
 placeholder:
   - name: "Please enter a custom quota, the unit is `Gi`"
