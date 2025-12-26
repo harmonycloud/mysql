@@ -27,7 +27,7 @@ spec:
           - "jsonpath='{.spec.proxy}'"
           - "|"
           - "awk"
-          - '''/enable/ {found=1; exit} END {if (found) print "proxy"; else print "noproxy"}'''
+          - '''/"enable":true/ {found=1; exit} END {if (found) print "proxy"; else print "noproxy"}'''
     - name: restart
       cmd:
         command:
