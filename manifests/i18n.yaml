@@ -82,6 +82,6 @@ actionAliasName:
     name-zh: "主从切换"
   - name: "Automatic switch"
     name-zh: "自动切换"
-  - name: "Restart"
+  - name: "Middleware Restart"
     name-zh: "服务重启"
 
