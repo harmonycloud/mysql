@@ -39,4 +39,15 @@ spec:
           - "{{ .Globe.Namespace }}"
           - "--type=merge"
           - "-p"
-          - '''{"metadata":{"annotations":{"middleware.maintenance.lock":"graceful-restart"{{ if eq .Step.isProxy.output "proxy" }},"middleware.maintenance.component":"proxysql"{{ end }}}}}'''
+          - '''{"metadata":{"annotations":{"middleware.maintenance.lock":"graceful-restart"}}}'''
+    - name: waitForReady
+      output:
+        type: "string"
+        expose: false
+      cmd:
+        command:
+          - '{{ if eq .Step.isProxy.output "proxy" }}i=0; while [ $i -lt 60 ] && kubectl get MysqlCluster -n {{ .Globe.Namespace }} {{ .Globe.MiddlewareName }} -o yaml 2>/dev/null | grep -q "middleware.maintenance.lock:"; do i=$((i+1)); echo "第 $i 次检查，维护锁存在"; sleep 10; done; echo "完成"{{ else }}echo 1{{ end }}'
+    - name: restartPredixy
+      cmd:
+        command:
+          - '{{ if eq .Step.isProxy.output "proxy" }}kubectl annotate MysqlCluster -n {{ .Globe.Namespace }} {{ .Globe.MiddlewareName }} middleware.maintenance.lock=graceful-restart middleware.maintenance.component=proxysql --overwrite=true{{ else }}echo 1{{ end }}'
