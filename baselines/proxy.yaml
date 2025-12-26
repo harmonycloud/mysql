@@ -35,7 +35,7 @@ spec:
         "type": "password",
         "label": "AdminPassword",
         "required": true,
-        "description": "Please enter a password consisting of English letters, numbers, or special characters /, ~, %, _, .",
+        "description": "Please enter a password consisting of English letters, numbers, or the special characters \"/, ~, %, _, .\"",
         "placeholder": "Enter your admin password",
         "pattern": "^[A-Za-z0-9~_./%]*$"
        }
