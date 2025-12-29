@@ -4,6 +4,7 @@ metadata:
   name: mysql-datasecurity
   annotations:
     alias: "datasecurity"
+    ignore: "true"
 spec:
   baselineType: "NormalAction"
   actionType: "datasecurity"
