@@ -1,0 +1,11 @@
+apiVersion: middleware.cn/v1
+kind: MiddlewareActionBaseline
+metadata:
+  name: mysql-datasecurity
+  annotations:
+    alias: "datasecurity"
+spec:
+  baselineType: "NormalAction"
+  actionType: "datasecurity"
+  necessary:
+  steps:
