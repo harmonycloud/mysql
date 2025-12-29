@@ -75,6 +75,8 @@ label:
     name-zh: "存储类"
   - name: "Turn off automatic switching?"
     name-zh: "是否关闭自动切换"
+  - name: "Automatic switch"
+    name-zh: "自动切换"
 
 
 actionAliasName:
