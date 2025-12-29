@@ -19,7 +19,7 @@ spec:
         command:
           - "kubectl"
           - "get"
-          - "mid"
+          - "MysqlCluster"
           - "-n"
           - "{{ .Globe.Namespace }}"
           - "{{ .Globe.MiddlewareName }}"
