@@ -94,7 +94,7 @@ spec:
         - name: DBNAME
           value: "{{ .Globe.Name }}"
         - name: MYSQL_ROOT_PASSWORD
-          value: "{{ .Necessary.password }}"
+          value: '"{{ .Necessary.password }}"'
         - name: MYSQL_USER_HOST
           value: "%"
         - name: MYSQL_ROOT_HOST
