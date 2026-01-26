@@ -78,6 +78,11 @@ label:
   - name: "Automatic switch"
     name-zh: "自动切换"
 
+  - name: "CharacterSet"
+    name-zh: "字符集"
+  - name: "Collation Server"
+    name-zh: "语言环境"
+
 
 actionAliasName:
   - name: "MasterSlaveSwitchover"
