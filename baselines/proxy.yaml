@@ -21,7 +21,7 @@ spec:
           memory: '{"type":"string","label":"Memory","required":true,"description":"Please enter a custom quota, the unit is `Gi`","placeholder":"Please enter a custom quota, the unit is `Gi`","default":"4","pattern":"^(?!0$)(?!0\\d)\\d+(\\.\\d)?$","min":0.1}'
         replicas: '{"type":"int","label":"Replicas","required":true,"description":"The number of nodes in a MySQL cluster is recommended to be at least 2 to ensure high availability.","default":2,"pattern":"^[2-5]$","placeholder":"Please enter the number of instances"}'
         volume:
-          size: '{"type":"int","label":"StorageSize","required":true,"description":"Please enter the storage size","pattern":"^(?!0$)(?!0\\d)\\d+(\\.\\d)?$","placeholder":"Please enter the storage size"}'
+          size: '{"type":"int","label":"StorageSize","required":true,"pattern":"^(?!0$)(?!0\\d)\\d+(\\.\\d)?$","placeholder":"Please enter the storage size","min":5}'
           storageClass: '{"type":"storageClass","label":"StorageClass","required":true,"description":"Please select storage","placeholder":"Please select storage"}'
       proxy:
         limits:
@@ -35,9 +35,9 @@ spec:
         "type": "password",
         "label": "AdminPassword",
         "required": true,
-        "description": "Please enter a password consisting of English letters, numbers, or the special characters \"/, ~, %, _, .\"",
+        "description": "Please enter a password consisting of English letters, numbers, or the special characters \"/ ~ % _ . ^ + = - [ ] : ,\"",
         "placeholder": "Enter your admin password",
-        "pattern": "^[A-Za-z0-9~_./%]*$"
+        "pattern": "^[A-Za-z0-9~_./%^+=:\\-\\[\\],]*$"
        }
     version: '{"type":"version","label":"Version","required":true,"default":"8.0.39"}'
   preActions:
