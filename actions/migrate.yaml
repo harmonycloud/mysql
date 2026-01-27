@@ -1,0 +1,174 @@
+apiVersion: middleware.cn/v1
+kind: MiddlewareActionBaseline
+metadata:
+  name: mysql-migrate
+  annotations:
+    alias: "NodeMigration"
+    roles: "slave,SyncSlave"
+spec:
+  baselineType: "OpsAction"
+  actionType: "migrate"
+  necessary:
+    podName: '{"type":"string","label":"PodName","required":true,"description":"待迁移的 Pod 名称","placeholder":"请输入 Pod 名称"}'
+    hostName: '{"type":"string","label":"HostName","required":true,"description":"目标节点名称","placeholder":"请输入目标节点名称"}'
+    whiteList: ""
+  steps:
+    # 步骤1: 检查是否是主节点
+    - name: checkMasterNode
+      output:
+        type: "string"
+        expose: true
+      cmd:
+        command:
+          - "kubectl"
+          - "get"
+          - "mid"
+          - "-n"
+          - "{{ .Globe.Namespace }}"
+          - "{{ .Globe.MiddlewareName }}"
+          - "-o"
+          - 'jsonpath=''{.status.customResources.include.pods[?(@.type=="Master")].name}'''
+
+    # 步骤2: 验证不是主节点
+    - name: validateNotMaster
+      cmd:
+        command:
+          - |
+            {{- if eq .Step.checkMasterNode.output .Necessary.podName }}                                                                                                                              
+            echo "错误: 主节点不允许执行迁移操作"                                                                                                                                                     
+            exit 1                                                                                                                                                                                    
+            {{- else }}                                                                                                                                                                               
+            echo "验证通过: Pod {{ .Necessary.podName }} 不是主节点"                                                                                                                                  
+            {{- end }}
+
+    # 步骤3: 获取 Pod 使用的 PVC 名称
+    - name: getPvcName
+      output:
+        type: "string"
+        expose: true
+      cmd:
+        command:
+          - "kubectl"
+          - "get"
+          - "pod"
+          - "-n"
+          - "{{ .Globe.Namespace }}"
+          - "{{ .Necessary.podName }}"
+          - "-o"
+          - "jsonpath='{.spec.volumes[?(@.persistentVolumeClaim)].persistentVolumeClaim.claimName}'"
+
+    # 步骤5: 获取 PV 详细信息（JSON 格式）
+    - name: getPvcDetails
+      output:
+        type: "json"
+        expose: true
+      cmd:
+        command:
+          - "kubectl"
+          - "get"
+          - "pvc"
+          - "-n"
+          - "{{ .Globe.Namespace }}"
+          - "{{ .Step.getPvcName.output }}"
+          - "-o"
+          - "json"
+
+    # 步骤6: 获取storageClass
+    - name: getStorageClass
+      output:
+        type: "json"
+        expose: true
+      cmd:
+        command:
+          - "kubectl"
+          - "get"
+          - "storageclass"
+          - "{{ .Step.getPvcDetails.output.spec.storageClassName }}"
+          - "-o"
+          - "json"
+
+    # 步骤6: 判断存储类型
+    - name: checkStorageType
+      output:
+        type: "string"
+        expose: true
+      cmd:
+        command:
+          - |
+            {{- $storageClass := .Step.getStorageClass.output }}                                                                                                                                      
+            {{- $storageClassName := $storageClass.metadata.name }}                                                                                                                                   
+            {{- $storageTypeAnnotation := index $storageClass.metadata.annotations "storageservice.harmonycloud.cn/type" }}                                                                          
+            {{- $whiteList := .Necessary.whiteList }}                                                                                                                                                 
+            {{- $isRemoteStorage := false }}                                                                                                                                                          
+                                                                                                                                                                                                      
+            {{- /* 检查 whiteList 数组中是否包含 storageClass 名称 */ -}}                                                                                                                             
+            {{- if $whiteList }}                                                                                                                                                                      
+              {{- range $whiteList }}                                                                                                                                                                 
+                {{- if eq . $storageClassName }}                                                                                                                                                      
+                  {{- $isRemoteStorage = true }}                                                                                                                                                      
+                {{- end }}                                                                                                                                                                            
+              {{- end }}                                                                                                                                                                              
+            {{- end }}                                                                                                                                                                                
+                                                                                                                                                                                                      
+            {{- /* 如果不在 whiteList 中，检查 storageClass annotations 中的存储类型 */ -}}                                                                                                          
+            {{- if not $isRemoteStorage }}                                                                                                                                                            
+              {{- if $storageTypeAnnotation }}                                                                                                                                                        
+                {{- if or (eq $storageTypeAnnotation "NFS") (eq $storageTypeAnnotation "GlusterFS") (eq $storageTypeAnnotation "ALI-NAS") (eq $storageTypeAnnotation "ALI-DISK") }}
+                  {{- $isRemoteStorage = true }}                                                                                                                                                      
+                {{- end }}                                                                                                                                                                            
+              {{- end }}                                                                                                                                                                              
+            {{- end }}                                                                                                                                                                                
+                                                                                                                                                                                                      
+            {{- if $isRemoteStorage }}                                                                                                                                                                
+            echo "remote"                                                                                                                                                                             
+            {{- else }}                                                                                                                                                                               
+            echo "local"                                                                                                                                                                              
+            exit 1                                                                                                                                                                                    
+            {{- end }}
+
+    # 步骤7: 创建 Maintenance CR
+    - name: createMaintenanceCR
+      cmd:
+        command:
+          - |
+            {{- if ne .Step.checkStorageType.output "remote" }}                                                                                                                                       
+            echo "错误: 只有远程存储可以执行迁移操作"                                                                                                                                                 
+            exit 1                                                                                                                                                                                    
+            {{- end }}                                                                                                                                                                                
+                                                                                                                                                                                                      
+            # 生成 8 位 UUID                                                                                                                                                                          
+            UUID=$(cat /dev/urandom | tr -dc 'a-z0-9' | fold -w 8 | head -n 1)                                                                                                                        
+            CR_NAME="{{ .Globe.MiddlewareName }}-migrate-${UUID}"                                                                                                                                     
+            NAMESPACE="{{ .Globe.Namespace }}"                                                                                                                                                         
+                                                                                                                                                                                                      
+            # 创建 Maintenance CR                                                                                                                                                                     
+            cat > /tmp/maintenance-${CR_NAME}.yaml << EOF
+            apiVersion: maintenance.middleware.hc.cn/v1alpha1
+            kind: Maintenance
+            metadata:
+              namespace: ${NAMESPACE}
+              name: ${CR_NAME}
+              labels:
+                app: {{ .Globe.MiddlewareName }}
+            spec:
+              action: "migrate"
+              nodeRule:
+                selector:
+                  kubernetes.io/hostname: "{{ .Necessary.hostName }}"
+              param:
+                migrateEnable: true
+                pod: "{{ .Necessary.podName }}"
+                namespace: ${NAMESPACE}
+            EOF
+
+            ERROR_OUTPUT=$(kubectl apply -f /tmp/maintenance-${CR_NAME}.yaml 2>&1)
+            EXIT_CODE=$?
+            if [ $EXIT_CODE -eq 0 ]; then
+              echo "Maintenance CR ${CR_NAME} 创建成功"
+            else
+              echo "Failed to create Maintenance CR ${CR_NAME}: $ERROR_OUTPUT"
+              exit 1
+            fi
+
+            # 清理临时文件
+            rm -f /tmp/maintenance-${CR_NAME}.yaml
