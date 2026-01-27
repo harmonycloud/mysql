@@ -75,6 +75,22 @@ spec:
                 ]
               }
             }
+            {{- if hasKey .Necessary "auditLogging" }}
+            {{- if .Necessary.auditLogging }}
+            configurations: [
+              {
+                name: "mysql-config"
+                values: {
+                  features: {
+                    auditLog: {
+                      enabled: true
+                    }
+                  }
+                }
+              },
+            ]
+            {{- end }}
+            {{- end }}
           }
           resource: {
             apiversion: "middleware.cn/v1"
