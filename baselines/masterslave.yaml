@@ -51,7 +51,7 @@ spec:
       parameters:
         fileLogging: true
         stdoutLogging: true
-        auditLogging: true
+        auditLogging: false
         slowqueryLogging: true
       exposed: true
     - name: pre-mysql-affinity
