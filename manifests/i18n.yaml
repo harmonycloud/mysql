@@ -78,7 +78,7 @@ label:
   - name: "Automatic switch"
     name-zh: "自动切换"
 
-  - name: "CharacterSet"
+  - name: "Character Set"
     name-zh: "字符集"
   - name: "Collation Server"
     name-zh: "排序规则"

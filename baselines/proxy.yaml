@@ -41,7 +41,7 @@ spec:
        }
     version: '{"type":"version","label":"Version","required":true,"default":"8.0.39"}'
     collationServer: '{"type":"enum","label":"Collation Server","options":"utf8mb4_general_ci,utf8mb4_bin,utf8mb4_unicode_520_ci,utf8mb4_unicode_ci","required":true,"description":"Please enter the collation server","placeholder":"Please enter the collation server","default":"utf8mb4_general_ci"}'
-    characterSet: '{"type":"enum","label":"CharacterSet","options":"utf8mb4","required":true,"description":"Please enter the character set","placeholder":"Please enter the character set","default":"utf8mb4"}'
+    characterSet: '{"type":"enum","label":"Character Set","options":"utf8mb4","required":true,"description":"Please enter the character set","placeholder":"Please enter the character set","default":"utf8mb4"}'
   preActions:
     - name: pre-mysql-heimdallr-hdpool
       parameters:
