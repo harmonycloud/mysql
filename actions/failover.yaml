@@ -9,22 +9,6 @@ spec:
   actionType: "failover"
   necessary: {}
   steps:
-    - name: getSlaveNames
-      output:
-        type: "string"
-        expose: true
-      cmd:
-        command:
-          - |
-            kubectl get mid {{ .Globe.MiddlewareName }} -n {{ .Necessary.namespace }} -o jsonpath='{.status.customResources.include.pods[?(@.type=="slave")].name}'
-    - name: getSlaveName
-      output:
-        type: "string"
-        expose: true
-      cmd:
-        command:
-          - |
-            echo "{{ .Step.getSlaveNames.output }}" | awk '{print $1}'
     - name: getSyncSlave
       output:
         type: "string"

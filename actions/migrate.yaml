@@ -4,7 +4,7 @@ metadata:
   name: mysql-migrate
   annotations:
     alias: "NodeMigration"
-    roles: "slave,SyncSlave"
+    roles: "Slave,SyncSlave"
 spec:
   baselineType: "OpsAction"
   actionType: "migrate"
