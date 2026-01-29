@@ -81,7 +81,7 @@ label:
   - name: "CharacterSet"
     name-zh: "字符集"
   - name: "Collation Server"
-    name-zh: "语言环境"
+    name-zh: "排序规则"
 
 
 actionAliasName:
