@@ -1,0 +1,59 @@
+apiVersion: middleware.cn/v1
+kind: MiddlewareActionBaseline
+metadata:
+  name: pre-mysql-bigversion
+spec:
+  baselineType: "PreAction"
+  actionType: "bigversion"
+  necessary:
+    version: ""
+    repository: ""
+  steps:
+    - name: tolerations
+      type: "KubectlEdit" # KubectlGet、KubectlEdit、KubectlExec、Exec、HTTP
+      cue: |
+        {{- $mysqlBigVersion := regexFind "[5.7|8.0|8.4]" .Necessary.version }}
+        output: {
+          spec: parameters.spec
+        }
+        parameters: {
+          spec: {
+            parameters: {
+              statefulset: {
+                {{- if eq $mysqlBigVersion "8.4" }}
+                monitorImage: {{ .Necessary.repository }}/mysqld-exporter:v0.18.0-1.0.0-exporter
+                {{- else }}
+                monitorImage: {{ .Necessary.repository }}/mysqld-exporter:v0.12.1-1.0.0
+                {{- end }}
+              }
+              "_statefulset": {
+                spec: {
+                  template: {
+                    spec: {
+                    {{- if eq $mysqlBigVersion "8.4" }}
+                      containers: [
+                        {
+                          name: "exporter"
+                          args: ["--mysqld.address=127.0.0.1:3306","--mysqld.username=zabbixjk","--collect.slave_status"]
+                          env: [
+                            {
+                              name: "MYSQLD_EXPORTER_PASSWORD"
+                              value: "CvNYz!6WIb9u"
+                            },
+                          ]
+                        },
+                      ]
+                    {{- end }}
+                    }
+                  }
+                }
+              }
+            }
+          }
+          resource: {
+            apiversion: "middleware.cn/v1"
+            kind: "Middleware"
+            name: "{{ .Globe.Name }}"
+            namespace: "{{ .Globe.Namespace }}"
+          }
+        }
