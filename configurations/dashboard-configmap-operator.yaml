@@ -952,7 +952,7 @@ spec:
               "tableColumn": "",
               "targets": [
                 {
-                  "expr": "sum(mysql_slave_status_seconds_behind_master{namespace=\"$namespace\",pod=\"$pod\"})",
+                  "expr": "sum(mysql_slave_status_seconds_behind_master{namespace=\"$namespace\",pod=\"$pod\"}) or sum(mysql_slave_status_seconds_behind_source{namespace=\"$namespace\",pod=\"$pod\"}) ",
                   "interval": "",
                   "legendFormat": "",
                   "refId": "A"
@@ -1042,7 +1042,7 @@ spec:
               "tableColumn": "",
               "targets": [
                 {
-                  "expr": "sum(mysql_slave_status_slave_sql_running{namespace=\"$namespace\",pod=\"$pod\"})",
+                  "expr": "sum(mysql_slave_status_slave_sql_running{namespace=\"$namespace\",pod=\"$pod\"}) or sum(mysql_slave_status_replica_sql_running{namespace=\"$namespace\",pod=\"$pod\"})",
                   "interval": "",
                   "legendFormat": "",
                   "refId": "A"
@@ -1139,7 +1139,7 @@ spec:
               "tableColumn": "",
               "targets": [
                 {
-                  "expr": "sum(mysql_slave_status_slave_io_running{namespace=\"$namespace\",pod=\"$pod\"})",
+                  "expr": "sum(mysql_slave_status_slave_io_running{namespace=\"$namespace\",pod=\"$pod\"}) or sum(mysql_slave_status_replica_io_running{namespace=\"$namespace\",pod=\"$pod\"})",
                   "instant": false,
                   "refId": "A"
                 }
@@ -2306,7 +2306,7 @@ spec:
                   "calculatedInterval": "2m",
                   "datasourceErrors": {},
                   "errors": {},
-                  "expr": "rate(mysql_global_status_slow_queries{namespace=\"$namespace\",pod=\"$pod\"}[$interval]) or irate(mysql_global_status_slow_queries{namespace=\"$namespace\",pod=\"$pod\"}[5m])",
+                  "expr": "increase(mysql_global_status_slow_queries{namespace=\"$namespace\",pod=\"$pod\"}[$interval])",
                   "format": "time_series",
                   "interval": "$interval",
                   "intervalFactor": 1,

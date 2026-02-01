@@ -226,8 +226,8 @@ spec:
                   cpu: 200m
                   memory: 512Mi
                 requests:
-                  cpu: 100m
-                  memory: 256Mi
+                  cpu: 200m
+                  memory: 512Mi
               volumeMounts:
                 - mountPath: /resource/proxysql-cluster/templates/
                   name: resource

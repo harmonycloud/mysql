@@ -4,6 +4,20 @@ metadata:
   name: mysql-config
 spec:
   template: |
+    {{ define "mysql-audit-log" }}
+    loose-plugin-load-add             =audit_log.so
+    loose-audit_log_file              =/data/mysql/DBNAME/elog/mysql-audit.json
+    loose-audit_log_exclude_accounts  =operator@%,healthchecker@localhost,replic@%,zabbixjk@%,boot@%,skip-grants@%
+    loose-audit_log_format            =JSON
+    loose-audit_log_policy            =QUERIES
+    {{ if .Values.args.audit_record_cmds }}
+    loose-audit_log_include_commands  = {{ .Values.args.audit_record_cmds }}
+    {{ else}}
+    {{ if  .Values.args.audit_whitelist_cmds }}
+    loose-audit_log_exclude_commands  = {{ .Values.args.audit_whitelist_cmds}}
+    {{ end }}
+    {{ end }}
+    {{ end}}
     apiVersion: v1
     data:
       my.cnf.tmpl: |
@@ -57,7 +71,6 @@ spec:
 
         #************** basic ***************
         {{- if eq $bigVersion "8" }}
-        default-authentication-plugin   =mysql_native_password
         plugin_dir=/usr/lib64/mysql/plugin/
         {{- $sql_mode := regexReplaceAll "NO_AUTO_CREATE_USER," .Values.args.sql_mode ""}}
         sql_mode                        ={{ $sql_mode | default "NO_ENGINE_SUBSTITUTION,STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO" }}
@@ -118,6 +131,11 @@ spec:
         general_log                     ={{ .Values.args.general_log | default "OFF" }}
         general_log_file                =/data/mysql/DBNAME/elog/general.log
         #************** binlog & relaylog ***************
+        {{- if ge .Values.version "8.4" }}
+        binlog_expire_logs_seconds      = {{ .Values.args.binlog_expire_logs_seconds | default 604800 }}
+        {{- else }}
+        expire_logs_days                ={{ .Values.args.expire_logs_days | default 7 }}
+        {{- end }}
         expire_logs_days                ={{ .Values.args.expire_logs_days | default 7 }}
         sync_binlog                     ={{ .Values.args.sync_binlog | default 1 }}
         log-bin                         =/data/mysql/DBNAME/log/mysql-bin
@@ -179,8 +197,8 @@ spec:
         #*************** muti thread slave ***************
         slave_parallel_type                         =LOGICAL_CLOCK
         slave_parallel_workers          ={{ .Values.args.slave_parallel_workers | default 8 }}
-        master_info_repository                      =TABLE
-        relay_log_info_repository                   =TABLE
+        loose-master_info_repository                      =TABLE
+        loose-relay_log_info_repository                   =TABLE
         #*************** buffer & timeout ***************
         read_buffer_size                ={{ .Values.args.read_buffer_size | default "1M" }}
         read_rnd_buffer_size            ={{ .Values.args.read_rnd_buffer_size | default "2M" }}
@@ -216,9 +234,9 @@ spec:
         innodb_flush_log_at_trx_commit      ={{ .Values.args.innodb_flush_log_at_trx_commit | default 2 }}
         innodb_fast_shutdown                ={{ .Values.args.innodb_fast_shutdown | default 1 }}
         innodb_flush_method                 ={{ .Values.args.innodb_flush_method | default "O_DIRECT" }}
-        innodb_io_capacity                  ={{ .Values.args.innodb_io_capacity | default 1000 }}
-        innodb_io_capacity_max              ={{ .Values.args.innodb_io_capacity_max | default 4000 }}
-        innodb_log_buffer_size              ={{ .Values.args.innodb_log_buffer_size | default "32M" }}
+        innodb_io_capacity                  ={{ .Values.args.innodb_io_capacity | default 10000 }}
+        innodb_io_capacity_max              ={{ .Values.args.innodb_io_capacity_max | default 20000 }}
+        innodb_log_buffer_size              ={{ .Values.args.innodb_log_buffer_size | default "64M" }}
         innodb_autoinc_lock_mode            ={{ .Values.args.innodb_autoinc_lock_mode | default 1 }}
         innodb_buffer_pool_load_at_startup  ={{ .Values.args.innodb_buffer_pool_load_at_startup | default "ON" }}
         innodb_buffer_pool_dump_at_shutdown ={{ .Values.args.innodb_buffer_pool_dump_at_shutdown | default "ON" }}
@@ -234,9 +252,14 @@ spec:
         innodb_sort_buffer_size             ={{ .Values.args.innodb_sort_buffer_size | default "64M" }}
         innodb_print_all_deadlocks          ={{ .Values.args.innodb_print_all_deadlocks | default 1 }}
         innodb_rollback_on_timeout          ={{ .Values.args.innodb_rollback_on_timeout | default "ON" }}
-        innodb_adaptive_hash_index          ={{ .Values.args.innodb_adaptive_hash_index | default "ON" }}
+        innodb_adaptive_hash_index          ={{ .Values.args.innodb_adaptive_hash_index | default "OFF" }}
         performance_schema_max_table_instances ={{ .Values.args.performance_schema_max_table_instances | default -1 }}
         #*************** plugins ***************
+        {{- if ge .Values.version "8.4" }}
+        mysql_native_password=ON
+        {{- else }}
+        default_authentication_plugin=mysql_native_password
+        {{- end }}
         default_authentication_plugin=mysql_native_password
         {{- if .Values.features.threadpool.enabled }}
         plugin-load-add=threadpool.so
@@ -254,6 +277,7 @@ spec:
 
         {{ if .Values.features.auditLog.enabled }}
         {{ if eq $bigVersion "5" }}
+        {{ if lt .Values.version "5.7.44" }}
         plugin-load-add=libaudit_plugin.so
         audit_json_log_file             =/data/mysql/DBNAME/elog/mysql-audit.json
         audit_whitelist_users           =operator,healthchecker,replic,zabbixjk,boot,skip-grants
@@ -264,6 +288,9 @@ spec:
         {{ end }}
         {{ if  .Values.args.audit_whitelist_cmds }}
         loose-audit_whitelist_cmds      =  {{ .Values.args.audit_whitelist_cmds }}
+        {{ end }}
+        {{ else }}
+        {{ include "mysql-audit-log" . | nindent 4 }}
         {{ end }}
 
         {{ else }}
@@ -281,18 +308,7 @@ spec:
         {{ end }}
 
         {{ else}}
-        loose-plugin-load-add             =audit_log.so
-        loose-audit_log_file              =/data/mysql/DBNAME/elog/mysql-audit.json
-        loose-audit_log_exclude_accounts  =operator@%,healthchecker@localhost,replic@%,zabbixjk@%,boot@%,skip-grants@%
-        loose-audit_log_format            =JSON
-        loose-audit_log_policy            =QUERIES
-        {{ if .Values.args.audit_record_cmds }}
-        loose-audit_log_include_commands  = {{ .Values.args.audit_record_cmds }}
-        {{ else}}
-        {{ if  .Values.args.audit_whitelist_cmds }}
-        loose-audit_log_exclude_commands  = {{ .Values.args.audit_whitelist_cmds}}
-        {{ end }}
-        {{ end }}
+        {{ include "mysql-audit-log" .  | nindent 4 }}
         {{ end }}
         {{ end }}
         {{ end }}
