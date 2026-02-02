@@ -44,7 +44,7 @@ spec:
   preActions:
     - name: pre-mysql-bigversion
       parameters:
-        version: "{{ .Necessary.version }}"
+        version: '"{{ .Necessary.version }}"'
         repository: "{{ .Necessary.repository }}"
       fixed: false
       exposed: false
