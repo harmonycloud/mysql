@@ -91,4 +91,6 @@ actionAliasName:
     name-zh: "自动切换"
   - name: "Middleware Restart"
     name-zh: "服务重启"
+  - name: "NodeMigration"
+    name-zh: "节点迁移"
 
