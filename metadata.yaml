@@ -1,5 +1,5 @@
 name: MySQL # 中间件类型
-version: 1.15.0-1.0.0
+version: 1.15.0-1.0.1
 app:
   version: # 中间件支持版本
     - "8.4.3"

@@ -183,7 +183,7 @@ spec:
             - name: mysql-operator
               securityContext:
                 { }
-              image: '{{ if ne .Globe.repository "" }}{{ .Globe.repository }}/{{ end }}{{ .Globe.project }}/mysql-operator:v1.13.0'
+              image: '{{ if ne .Globe.repository "" }}{{ .Globe.repository }}/{{ end }}{{ .Globe.project }}/mysql-operator:v1.15.0'
               command:
                 - /manager
                 - --v=5
