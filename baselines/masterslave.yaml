@@ -43,12 +43,6 @@ spec:
         repository: "{{ .Necessary.repository }}"
       fixed: false
       exposed: false
-    - name: pre-mysql-heimdallr-hdpool
-      parameters:
-        networkCardList: [ ]
-        annotations: { }
-      fixed: false
-      exposed: true
     - name: pre-mysql-alertrule-labels
       parameters:
         labels: {}

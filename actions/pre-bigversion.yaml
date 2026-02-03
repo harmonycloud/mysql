@@ -12,7 +12,7 @@ spec:
     - name: tolerations
       type: "KubectlEdit" # KubectlGet、KubectlEdit、KubectlExec、Exec、HTTP
       cue: |
-        {{- $mysqlBigVersion := regexFind "[5.7|8.0|8.4]" .Necessary.version }}
+        {{- $mysqlBigVersion := regexFind "5.7|8.0|8.4" .Necessary.version }}
         output: {
           spec: parameters.spec
         }
@@ -21,9 +21,9 @@ spec:
             parameters: {
               statefulset: {
                 {{- if eq $mysqlBigVersion "8.4" }}
-                monitorImage: {{ .Necessary.repository }}/mysqld-exporter:v0.18.0-1.0.0-exporter
+                monitorImage: "{{ .Necessary.repository }}/mysqld-exporter:v0.18.0-1.0.0-exporter"
                 {{- else }}
-                monitorImage: {{ .Necessary.repository }}/mysqld-exporter:v0.12.1-1.0.0
+                monitorImage: "{{ .Necessary.repository }}/mysqld-exporter:v0.12.1-1.0.0"
                 {{- end }}
               }
               "_statefulset": {
