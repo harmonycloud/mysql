@@ -313,7 +313,7 @@ spec:
             {{- if .Values.alertRules.MySQLVolumeUsageMinor.silence }}
             silence: {{ .Values.alertRules.MySQLVolumeUsageMinor.silence }}
             {{- end }}
-    
+
         - alert: MySQLVolumeUsageMajor
           expr: (100 * kube_persistentvolumeclaim_info{namespace='{{ .Globe.Namespace }}', persistentvolumeclaim=~"mysql-data-{{ .Globe.Name }}-[0-9]"}) * on(volumename) group_left max(label_replace ((used_size_kb / total_size_kb),"volumename", "$1", "pv", "(.+)")) by (volumename) > {{ .Values.alertRules.MySQLVolumeUsageMajor.threshold | default 85 }}
           for: {{ .Values.alertRules.MySQLVolumeUsageMajor.interval | default "5" }}m
@@ -334,7 +334,7 @@ spec:
             {{- if .Values.alertRules.MySQLVolumeUsageMajor.silence }}
             silence: {{ .Values.alertRules.MySQLVolumeUsageMajor.silence }}
             {{- end }}
-    
+
         - alert: MySQLFailOver
           annotations:
             message: 'The MySQL instance occurs Master-slave switchover or failover. (Namespace: {{ .Globe.Namespace }}, ServiceName: {{ .Globe.Name }}'
@@ -411,8 +411,8 @@ spec:
             {{- with .Values.labels }}
             {{- toYaml . | nindent 8 }}
             {{- end }}    
-    
-    
+
+
       {{- if .Values.proxy.enable }}
       - name: proxysql
         rules:
@@ -527,7 +527,7 @@ spec:
             {{- toYaml . | nindent 8 }}
             {{- end }}
     {{- end }}
-    
+
       {{- if .Values.customAlertRules }}
       - name: custom-alert-rules
         rules:

@@ -9,4 +9,4 @@ spec:
   baselineType: "NormalAction"
   actionType: "datasecurity"
   necessary:
-  steps:
+  steps: []
