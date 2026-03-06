@@ -77,11 +77,11 @@ spec:
       replicaCount: 3
       resources:
         limits:
-          cpu: "{{ .Necessary.resource.proxy.limits.cpu }}"
-          memory: "{{ .Necessary.resource.proxy.limits.memory }}"
+          cpu: '"{{ .Necessary.resource.proxy.limits.cpu }}"'
+          memory: '"{{ .Necessary.resource.proxy.limits.memory }}"'
         requests:
-          cpu: "{{ .Necessary.resource.proxy.requests.cpu }}"
-          memory: "{{ .Necessary.resource.proxy.requests.memory }}"
+          cpu: '"{{ .Necessary.resource.proxy.requests.cpu }}"'
+          memory: '"{{ .Necessary.resource.proxy.requests.memory }}"'
       strategy:
         type: RollingUpdate
         rollingUpdate:
