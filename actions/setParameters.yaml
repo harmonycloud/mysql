@@ -1,0 +1,60 @@
+apiVersion: middleware.cn/v1
+kind: MiddlewareActionBaseline
+metadata:
+  name: mysql-set-parameters
+  annotations:
+    alias: "Middleware Set Parameters"
+spec:
+  baselineType: "OpsAction"
+  actionType: "setParameters"
+  necessary:
+    parameters:
+      - key: "test1"
+        value: "test1"
+      - key: "test2"
+        value: "test2"
+  steps:
+    - name: getPodNames
+      output:
+        type: "string"
+        expose: true
+      cmd:
+        command:
+          - "kubectl"
+          - "get"
+          - "mid"
+          - "-n"
+          - "{{ .Globe.Namespace }}"
+          - "{{ .Globe.MiddlewareName }}"
+          - "-o"
+          - 'jsonpath=''{.status.customResources.include.pods[?(@.type!="proxy")].name}'''
+    - name: getPassword
+      output:
+        type: "string"
+        expose: true
+      cmd:
+        command:
+          - "kubectl"
+          - "get"
+          - "mid"
+          - "-n"
+          - "{{ .Globe.Namespace }}"
+          - "{{ .Globe.MiddlewareName }}"
+          - "-o"
+          - 'jsonpath=''{.spec.necessary.password}'''
+    - name: isProxy
+      output:
+        type: "string"
+        expose: true
+      cmd:
+        command:
+          - |
+            {{- $podNames := splitList " " .Step.getPodNames.output }}
+            # 把参数拼接为 set globe key1 value1;set globe key2 value2;...
+            {{- $setParametersString := "" }}
+            {{- range $key, $value := .Necessary.parameters }}
+            {{- $setParametersString = $setParametersString + "set globe " + $key + " " + $value + ";" }}
+            {{- end }}
+            {{- range $podName := $podNames }}
+            kubectl exec {{ $podName }} -n {{ $.Globe.Namespace }} -c mysql -- mysql -uroot -p{{ $.Step.getPassword.output }} -S /data/mysql/db_{{ $.Globe.MiddlewareName }}/conf/mysql.sock -e "{{ $setParametersString }}"
+            {{- end }}
