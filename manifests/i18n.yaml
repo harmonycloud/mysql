@@ -39,10 +39,14 @@ description:
     name-zh: "请输入存储大小"
   - name: "Please select storage"
     name-zh: "请选择存储"
-  - name: "Please enter a password consisting of English letters, numbers, or the special characters \"/ ~ % _ . ^ + = - [ ] : ,\""
-    name-zh: "请输入由英文字母、数字或特殊字符“/ ~ % _ . ^ + = - [ ] : ,”组成的密码信息"
+#  - name: "Please enter a password consisting of English letters, numbers, or the special characters \"/ ~ % _ . ^ + = - [ ] : \""
+#    name-zh: "请输入由英文字母、数字或特殊字符“/ ~ % _ . ^ + = - [ ] : ,”组成的密码信息"
   - name: "Minimum storage size is 5"
     name-zh: "存储大小最低为5"
+  - name: "Please enter a password consisting of English letters, numbers, or the special characters \"/ ~ % _ . ^ + = - [ ] : \""
+    name-zh: "由英文字母、数字或特殊字符“/ ~ % _ . ^ + = - [ ] : ,”组成的密码信息"
+  - name: "Password length must be between 8 and 32 characters"
+    name-zh: "(长度需要8-32之间)"
 
 placeholder:
   - name: "Please enter a custom quota, the unit is `Gi`"
