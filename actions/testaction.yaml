@@ -1,9 +1,9 @@
 apiVersion: middleware.cn/v1
 kind: MiddlewareActionBaseline
 metadata:
-  name: mysql-set-parameters
+  name: testAction
   annotations:
-    alias: "Middleware Set Parameters"
+    alias: "testAction"
 spec:
   baselineType: "OpsAction"
   actionType: "test"
