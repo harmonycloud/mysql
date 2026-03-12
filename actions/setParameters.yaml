@@ -52,8 +52,8 @@ spec:
             {{- $podNames := splitList " " .Step.getPodNames.output }}
             # 把参数拼接为 set globe key1 value1;set globe key2 value2;...
             {{- $setParametersString := "" }}
-            {{- range $key, $value := .Necessary.parameters }}
-            {{- $setParametersString = $setParametersString + "set globe " + $key + " " + $value + ";" }}
+            {{- range $param := .Necessary.parameters }}
+            {{- $setParametersString = printf "%sset globe %s %s;" $setParametersString (index $param "key") (index $param "value") }}
             {{- end }}
             {{- range $podName := $podNames }}
             kubectl exec {{ $podName }} -n {{ $.Globe.Namespace }} -c mysql -- mysql -uroot -p{{ $.Step.getPassword.output }} -S /data/mysql/db_{{ $.Globe.MiddlewareName }}/conf/mysql.sock -e "{{ $setParametersString }}"
