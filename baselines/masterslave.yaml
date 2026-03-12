@@ -94,6 +94,12 @@ spec:
         ]
       }
     characterSet: '{"type":"enum","label":"Character Set","options":"utf8mb4","required":true,"description":"Please enter the character set","placeholder":"Please enter the character set","default":"utf8mb4"}'
+    test1: '{"type":"mulString","label":"测试字段mulString","required":true,"description":"Please enter the character set","placeholder":"Please enter the character set","default":"utf8mb4"}'
+    test2: '{"type":"mulSelect","label":"测试字段mulSelect","options":"utf8mb4_general_ci,utf8mb4_bin,utf8mb4_unicode_520_ci,utf8mb4_unicode_ci","required":true,"description":"Please enter the character set","placeholder":"Please enter the character set","default":"utf8mb4"}'
+    test3: '{"type":"string","label":"测试字段String","required":true,"description":"Please enter the character set","placeholder":"Please enter the character set","default":"test"}'
+    test4: '{"type":"int","label":"测试字段int","required":true,"description":"Please enter the character set","placeholder":"Please enter the character set","default":"1"}'
+    test5: '{"type":"boolean","label":"测试字段boolean","required":true,"description":"Please enter the character set","placeholder":"Please enter the character set","default":false}'
+
   preActions:
     - name: pre-mysql-bigversion
       parameters:

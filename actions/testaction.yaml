@@ -1,0 +1,39 @@
+apiVersion: middleware.cn/v1
+kind: MiddlewareActionBaseline
+metadata:
+  name: testAction
+  annotations:
+    alias: "testAction"
+spec:
+  baselineType: "OpsAction"
+  actionType: "test"
+  necessary:
+    test1: '{"type":"mulString","label":"测试字段mulString","required":true,"description":"Please enter the character set","placeholder":"Please enter the character set","default":"utf8mb4"}'
+    test2: '{"type":"mulSelect","label":"测试字段mulSelect","options":"utf8mb4_general_ci,utf8mb4_bin,utf8mb4_unicode_520_ci,utf8mb4_unicode_ci","required":true,"description":"Please enter the character set","placeholder":"Please enter the character set","default":"utf8mb4"}'
+    test3: '{"type":"string","label":"测试字段String","required":true,"description":"Please enter the character set","placeholder":"Please enter the character set","default":"test"}'
+    test4: '{"type":"int","label":"测试字段int","required":true,"description":"Please enter the character set","placeholder":"Please enter the character set","default":"1"}'
+    test5: '{"type":"boolean","label":"测试字段boolean","required":true,"description":"Please enter the character set","placeholder":"Please enter the character set","default":false}'
+    test6: '{"type":"enum","label":"测试字段enum,"required":true,"options":"utf8mb4_general_ci,utf8mb4_bin,utf8mb4_unicode_520_ci,utf8mb4_unicode_ci", "description":"Please enter the character set","placeholder":"Please enter the character set","default":false}'
+
+  steps:
+    - name: test1
+      output:
+        type: "string"
+        expose: true
+      cmd:
+        command:
+          - "sleep 5"
+    - name: test1
+      output:
+        type: "string"
+        expose: true
+      cmd:
+        command:
+          - "sleep 5"
+    - name: test1
+      output:
+        type: "string"
+        expose: true
+      cmd:
+        command:
+          - "sleep 5"
