@@ -5,7 +5,7 @@ metadata:
   annotations:
     alias: "Middleware Set Parameters"
 spec:
-  baselineType: "OpsAction"
+  baselineType: "NormalAction"
   actionType: "setParameters"
   necessary:
     parameters:
