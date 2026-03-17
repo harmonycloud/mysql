@@ -53,7 +53,13 @@ spec:
             # 把参数拼接为 set globe key1 value1;set globe key2 value2;...
             {{- $setParametersString := "" }}
             {{- range $param := .Necessary.parameters }}
-            {{- $setParametersString = printf "%sset global %s='%s';" $setParametersString (index $param "key") (index $param "value") }}
+            {{- $value := index $param "value" }}
+            {{- $key := index $param "key" }}
+            {{- if regexMatch "^[0-9]+(\\.[0-9]+)?$" $value }}
+            {{- $setParametersString = printf "%sset global %s=%s;" $setParametersString $key $value }}
+            {{- else }}
+            {{- $setParametersString = printf "%sset global %s='%s';" $setParametersString $key $value }}
+            {{- end }}
             {{- end }}
             {{- range $podName := $podNames }}
             kubectl exec {{ $podName }} -n {{ $.Globe.Namespace }} -c mysql -- mysql -uroot -p{{ $.Step.getPassword.output }} -S /data/mysql/db_{{ $.Globe.MiddlewareName }}/conf/mysql.sock -e "{{ $setParametersString }}"
