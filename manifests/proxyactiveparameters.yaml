@@ -81,7 +81,7 @@ values:
           - name: isReboot
             value: y
           - name: range
-            value: [utf8mb4]
+            value: [utf8mb4|]
           - name: describe
             value: "The default character set"
       - collation_server:
