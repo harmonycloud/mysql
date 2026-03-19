@@ -46,12 +46,12 @@ spec:
         "required": true,
         "patterns": [
           {
-            "pattern": "^[A-Za-z0-9~_./%^+=:\\-\\[\\],]+$",
-            "description": "Please enter a password consisting of English letters, numbers, or the special characters \"/ ~ % _ . ^ + = - [ ] : ,\""
-          },
-          {
             "pattern": "^.{8,32}$",
             "description": "Password length must be between 8 and 32 characters"
+          },
+          {
+            "pattern": "^[A-Za-z0-9~_./%^+=:\\-\\[\\],]+$",
+            "description": "Please enter a password consisting of English letters, numbers, or the special characters \"/ ~ % _ . ^ + = - [ ] : ,\""
           }
         ],
         "pattern": "^[A-Za-z0-9~_./%^+=:\\-\\[\\],]*$",
