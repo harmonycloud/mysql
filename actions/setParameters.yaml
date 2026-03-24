@@ -42,7 +42,7 @@ spec:
           - "{{ .Globe.MiddlewareName }}"
           - "-o"
           - 'jsonpath=''{.spec.necessary.password}'''
-    - name: isProxy
+    - name: setParameters
       output:
         type: "string"
         expose: true

@@ -3,7 +3,7 @@ mainVersionGroups:
     - "8.4.3"
   "8.0.x":
     - "8.0.39"
-    - "8.0.44"
+    - "8.0.45"
 
 crossUpgradeRules:
   "8.4.x":
