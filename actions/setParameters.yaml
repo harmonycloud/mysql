@@ -56,9 +56,9 @@ spec:
             {{- $value := index $param "value" }}
             {{- $key := index $param "key" }}
             {{- if regexMatch "^[0-9]+(\\.[0-9]+)?$" $value }}
-            {{- $setParametersString = printf "%sset global %s=%s;" $setParametersString $key $value }}
+            {{- $setParametersString = printf "%sset global %s=%v;" $setParametersString $key $value }}
             {{- else }}
-            {{- $setParametersString = printf "%sset global %s='%s';" $setParametersString $key $value }}
+            {{- $setParametersString = printf "%sset global %s='%v';" $setParametersString $key $value }}
             {{- end }}
             {{- end }}
             {{- range $podName := $podNames }}
