@@ -63,7 +63,7 @@ placeholder:
     name-zh: "输入管理员账户密码"
 
 label:
-  - name: "AdminPassword"
+  - name: "Administrator password"
     name-zh: "管理员账号密码"
   - name: "Memory"
     name-zh: "内存"

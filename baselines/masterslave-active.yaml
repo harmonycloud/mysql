@@ -34,7 +34,7 @@ spec:
     password: |
       {
         "type": "password",
-        "label": "AdminPassword",
+        "label": "Administrator password",
         "required": true,
         "patterns": [
           {
