@@ -129,6 +129,9 @@ spec:
         tolerations: [ ]
       fixed: false
       exposed: true
+    - name: pre-mysql-passive-switch
+      parameters:
+        passiveSwitched: false
   parameters:
     proxy:
       enable: true

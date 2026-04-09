@@ -121,6 +121,9 @@ spec:
         tolerations: [ ]
       fixed: false
       exposed: true
+    - name: pre-mysql-passive-switch
+      parameters:
+        passiveSwitched: false
   parameters:
     _statefulset:
       spec:

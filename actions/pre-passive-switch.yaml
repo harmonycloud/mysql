@@ -1,0 +1,31 @@
+apiVersion: middleware.cn/v1
+kind: MiddlewareActionBaseline
+metadata:
+  name: pre-mysql-passive-switch
+  annotations:
+    alias: "Automatic switch"
+spec:
+  baselineType: "PreAction"
+  actionType: "passive-switch"
+  necessary:
+    passiveSwitched: '{"type":"boolean","label":"Automatic switch","required":true,"default":false,"visible":true}'
+  steps:
+    - name: passive-switch
+      type: "KubectlEdit" # KubectlGet、KubectlEdit、KubectlExec、Exec、HTTP
+      cue: |
+        output: {
+          spec: parameters.spec
+        }
+        parameters: {
+          spec: {
+            parameters: {
+              passiveSwitched: {{ .Necessary.passiveSwitched }}
+            }
+          }
+          resource: {
+            apiversion: "middleware.cn/v1"
+            kind: "Middleware"
+            name: "{{ .Globe.Name }}"
+            namespace: "{{ .Globe.Namespace }}"
+          }
+        }
