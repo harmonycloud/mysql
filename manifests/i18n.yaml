@@ -29,8 +29,8 @@ description:
     name-zh: "请输入自定义配额,单位为Core"
   - name: "Please enter a custom quota, the unit is `Gi`"
     name-zh: "请输入自定义配额,单位为Gi"
-  - name: "Number of nodes in the MySQL cluster, with a range of 2 to 5 nodes"
-    name-zh: "MySQL集群的节点数量，节点数范围2至5"
+  - name: "Please enter the number of instances within the range of 2-5"
+    name-zh: "请输入2-5范围内的实例数"
   - name: "Number of nodes in the MySQL cluster is 2 or 4"
     name-zh: "MySQL集群的节点数量，节点数为2或4"
   - name: "The number of nodes in a MySQL cluster is recommended to be at least 2 to ensure high availability."
@@ -61,6 +61,8 @@ placeholder:
     name-zh: "请输入实例数"
   - name: "Enter your admin password"
     name-zh: "请输入管理员账户密码"
+  - name: "Please enter the number of instances within the range of 2-5"
+    name-zh: "请输入2-5范围内的实例数"
 
 label:
   - name: "Administrator password"
