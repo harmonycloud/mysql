@@ -1,273 +1,269 @@
-# MySQL 数据库服务
+# MySQL Database Service
 
-## 描述
+Enterprise-grade MySQL database service for Kubernetes with high availability, read-write splitting, and automatic failover.
 
-MySQL 是世界上最流行的开源关系型数据库管理系统，以其高性能、高可靠性和易用性而闻名。本服务基于 MySQL 集群，提供企业级的高可用、高性能数据库解决方案，支持主从复制、读写分离、自动故障转移等高级功能。
+## Overview
 
-## 功能
+MySQL is one of the world's most popular open-source relational database management systems, known for its high performance, reliability, and ease of use. This package delivers a production-ready MySQL cluster on Kubernetes, featuring primary-replica replication, intelligent read-write splitting via ProxySQL, automatic failover, and integrated monitoring.
 
-### 核心功能
-- **高可用性**: 支持主从复制、自动故障转移和故障恢复
-- **读写分离**: 通过 ProxySQL 实现智能读写分离
-- **数据持久化**: 基于 Kubernetes 持久化存储，支持数据备份恢复
-- **监控告警**: 集成 Prometheus 监控和告警规则
-- **自动扩缩容**: 支持实例数量动态调整
-- **备份恢复**: 支持物理备份和逻辑备份
+## Features
 
-### 高级特性
-- **半同步复制**: 确保数据一致性和高可用性
-- **连接池管理**: 通过 ProxySQL 优化数据库连接
-- **慢查询分析**: 内置慢查询日志和性能分析
-- **审计日志**: 支持数据库操作审计和合规性要求
-- **资源管理**: 灵活的 CPU 和内存资源配置
-- **网络隔离**: 支持主机网络和 Pod 网络模式
-- **时区配置**: 默认配置为 Asia/Shanghai 时区
+### Core Capabilities
+- **High availability**: Primary-replica replication with automatic failover and recovery
+- **Read-write splitting**: Intelligent query routing through ProxySQL
+- **Durable storage**: Kubernetes persistent volumes with backup and restore support
+- **Monitoring and alerting**: Integrated Prometheus metrics and alert rules
+- **Auto scaling**: Dynamically adjust the instance count
+- **Backup and restore**: Physical backups (XtraBackup) and logical backups
 
-### 企业级功能
-- **线程池**: 优化并发连接处理
-- **缓冲池控制**: 动态调整 InnoDB 缓冲池大小
-- **回收站**: 防止误删数据的回收机制
-- **性能优化**: 内置性能调优参数
+### Advanced Features
+- **Semi-synchronous replication**: Ensures data consistency and high availability
+- **Connection pool management**: Optimized database connections via ProxySQL
+- **Slow query analysis**: Built-in slow query logging and performance profiling
+- **Audit logging**: Database operation auditing for compliance requirements
+- **Resource management**: Flexible CPU and memory sizing
+- **Network isolation**: Supports host-network and Pod-network modes
+- **Time zone control**: Defaults to the Asia/Shanghai time zone
 
-## 支持版本
+### Enterprise Features
+- **Thread pool**: Optimized concurrent connection handling
+- **Buffer pool control**: Dynamic InnoDB buffer pool sizing
+- **Recycle bin**: Protection against accidental data deletion
+- **Performance tuning**: Built-in performance optimization parameters
 
-### MySQL 版本
-- **8.4.3** (最新版本，推荐)
-- **8.0.39** (稳定版本)
+## Supported Versions
+
+### MySQL Releases
+- **8.4.3** (latest, recommended)
+- **8.0.39** (stable)
 - **8.0.45**
 
-### 组件版本
+### Component Releases
 - **MySQL Operator**: v1.13.0
-- **MySQL Cluster**: 根据版本自动选择
 - **MySQL Init**: v80-2.0.0 / v57-2.0.0
 - **XtraBackup**: v8.0-4 / v1.2.0-hc.8
 - **MySQL Exporter**: v0.12.1-1.0.0
 - **ProxySQL**: 2.5.2-1.0.0
 - **Logrotate**: 3.21.0-1.0.0
 
-## 架构
+## Architecture
 
-### 部署模式
+### Deployment Modes
 
-#### 1. 主从模式 (master-slave)
-- **适用场景**: 生产环境、需要读写分离的应用
-- **特点**: 主从复制，支持故障自动切换
-- **配置**: 1 主 + N 从实例，支持自定义实例数量
-- **同步模式**: 半同步复制，确保数据一致性
+#### 1. Primary-Replica (masterslave)
+- **Use cases**: Production workloads, applications that need read-write separation
+- **Traits**: Primary-replica replication with automatic failover
+- **Topology**: 1 primary + N replicas, configurable count
+- **Sync mode**: Semi-synchronous replication for data consistency
 
-#### 2. 代理模式 (proxy)
-- **适用场景**: 高并发应用、需要智能路由的场景
-- **特点**: 集成 ProxySQL，实现读写分离和连接池管理
-- **配置**: MySQL 集群 + ProxySQL 代理层
-- **优势**: 自动故障转移、查询路由、连接复用
+#### 2. Proxy (proxy)
+- **Use cases**: High-concurrency applications, scenarios requiring intelligent routing
+- **Traits**: Integrated ProxySQL for read-write splitting and connection pooling
+- **Topology**: MySQL cluster + ProxySQL proxy layer
+- **Advantages**: Automatic failover, query routing, connection multiplexing
 
-#### 3. 高可用模式 (highly-available)
-- **适用场景**: 关键业务系统、对可用性要求极高的场景
-- **特点**: 多实例部署，自动故障转移，数据强一致性
-- **配置**: 3+ 实例，支持同步复制和自动恢复
+#### 3. Highly Available (operator-highly-available)
+- **Use cases**: Mission-critical systems with strict uptime targets
+- **Traits**: Multi-instance deployment, automatic failover, strong data consistency
+- **Topology**: 3+ instances with synchronous replication and auto-recovery
 
-### 技术架构
+#### 4. Standard (operator-standard)
+- **Use cases**: Development, testing, and quick deployment
+- **Traits**: Minimal resources, simple single-instance setup
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│                    MySQL Cluster                           │
-├─────────────────────────────────────────────────────────────┤
-│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐        │
-│  │   Master    │  │   Slave     │  │   Slave     │        │
-│  │  (Primary)  │  │  (Replica)  │  │  (Replica)  │        │
-│  └─────────────┘  └─────────────┘  └─────────────┘        │
-├─────────────────────────────────────────────────────────────┤
-│                    ProxySQL Layer                          │
-│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐        │
-│  │  ProxySQL   │  │  ProxySQL   │  │  ProxySQL   │        │
-│  │  Instance   │  │  Instance   │  │  Instance   │        │
-│  └─────────────┘  └─────────────┘  └─────────────┘        │
-├─────────────────────────────────────────────────────────────┤
-│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐        │
-│  │   Service   │  │  ConfigMap  │  │   Secret    │        │
-│  │  (Endpoints)│  │  (Config)   │  │ (Passwords) │        │
-│  └─────────────┘  └─────────────┘  └─────────────┘        │
-├─────────────────────────────────────────────────────────────┤
-│                 Kubernetes Storage (PVC)                   │
-└─────────────────────────────────────────────────────────────┘
-```
-
-### 组件说明
-
-- **MySQL Server**: 核心数据库引擎
-- **MySQL Operator**: 集群管理控制器
-- **ProxySQL**: 高性能代理，提供连接池和查询路由
-- **XtraBackup**: 物理备份工具
-- **MySQL Exporter**: Prometheus 监控指标收集器
-- **Logrotate**: 日志轮转管理
-
-### 数据流架构
+### Technical Architecture
 
 ```
-Application → ProxySQL → MySQL Master (Write)
-                    ↓
-              MySQL Slaves (Read)
-                    ↓
-              Backup & Monitoring
++---------------------------------------------------------+
+|                    MySQL Cluster                        |
++---------------------------------------------------------+
+|  +-----------+  +-----------+  +-----------+            |
+|  |  Master   |  |  Slave    |  |  Slave    |            |
+|  | (Primary) |  | (Replica) |  | (Replica) |            |
+|  +-----------+  +-----------+  +-----------+            |
++---------------------------------------------------------+
+|                    ProxySQL Layer                        |
+|  +-----------+  +-----------+  +-----------+            |
+|  | ProxySQL  |  | ProxySQL  |  | ProxySQL  |            |
+|  | Instance  |  | Instance  |  | Instance  |            |
+|  +-----------+  +-----------+  +-----------+            |
++---------------------------------------------------------+
+|  +-----------+  +-----------+  +-----------+            |
+|  |  Service  |  | ConfigMap |  |  Secret   |            |
+|  |(Endpoints)|  |  (Config) |  |(Passwords)|            |
+|  +-----------+  +-----------+  +-----------+            |
++---------------------------------------------------------+
+|                 Kubernetes Storage (PVC)                 |
++---------------------------------------------------------+
 ```
 
-## 使用建议
+### Data Flow
 
-### 环境选择
+```
+Application -> ProxySQL -> MySQL Master (Write)
+                      |
+                MySQL Slaves (Read)
+                      |
+                Backup & Monitoring
+```
 
-#### 开发测试环境
-- **推荐配置**: 主从模式
-- **资源规格**: CPU 2 Core, 内存 4Gi, 存储 50Gi
-- **版本选择**: MySQL 8.0.39
-- **实例数**: 2 个实例（1 主 1 从）
+### Component Overview
 
-#### 生产环境
-- **推荐配置**: 代理模式或高可用模式
-- **资源规格**: CPU 4+ Core, 内存 8+ Gi, 存储 200+ Gi
-- **版本选择**: MySQL 8.0.39 或 5.7.44
-- **实例数**: 3+ 个实例，确保高可用
+- **MySQL Server**: Core database engine
+- **MySQL Operator**: Cluster management controller
+- **ProxySQL**: High-performance proxy providing connection pooling and query routing
+- **XtraBackup**: Physical backup tool
+- **MySQL Exporter**: Prometheus metrics collector
+- **Logrotate**: Log rotation management
 
-### 配置建议
+## Prerequisites
 
-#### 资源规划
+- Kubernetes 1.26+
+- [OpenSaola Operator](https://github.com/harmonycloud/opensaola) deployed
+- [saola-cli](https://github.com/harmonycloud/saola-cli) installed
+
+## Quick Start
+
+```bash
+# Publish the package
+saola publish mysql/
+
+# Install the operator
+saola operator create mysql-operator --type MySQL --version 8.4.3
+
+# Create an instance
+saola middleware create my-mysql --type MySQL --version 8.4.3
+
+# Check status
+saola middleware get my-mysql
+```
+
+## Available Actions
+
+| Action | Description |
+|--------|-------------|
+| restart | Restart the middleware instance |
+| failover | Trigger manual failover |
+| migrate | Migrate nodes to different Kubernetes nodes |
+| passive-switch | Perform a passive primary-replica switchover |
+| datasecurity | Manage data security settings |
+| setParameters | Modify runtime configuration parameters |
+
+## Configuration
+
+Key parameters can be customized via the baseline configuration. See `manifests/*parameters.yaml` for the full parameter reference.
+
+### Resource Planning
+
 ```yaml
-# 生产环境推荐配置
+# Recommended production settings
 resources:
   mysql:
     limits:
-      cpu: "4"        # 4 Core
-      memory: "8Gi"   # 8GB
+      cpu: "4"        # 4 cores
+      memory: "8Gi"   # 8 GB
     requests:
-      cpu: "2"        # 2 Core
-      memory: "4Gi"   # 4GB
+      cpu: "2"        # 2 cores
+      memory: "4Gi"   # 4 GB
   proxy:
     limits:
-      cpu: "2"        # 2 Core
-      memory: "4Gi"   # 4GB
+      cpu: "2"        # 2 cores
+      memory: "4Gi"   # 4 GB
     requests:
-      cpu: "1"        # 1 Core
-      memory: "2Gi"   # 2GB
+      cpu: "1"        # 1 core
+      memory: "2Gi"   # 2 GB
 
-# 存储配置
+# Storage profile
 volume:
-  size: 200           # 200GB
-  storageClass: "fast-ssd"  # 使用 SSD 存储类
+  size: 200           # 200 GB
+  storageClass: "fast-ssd"  # SSD-backed class
 ```
 
-#### 高可用配置
-```yaml
-# 主从复制配置
-syncMode: semi-sync   # 半同步复制
-replicas: 3          # 3 个实例
+### High Availability Settings
 
-# ProxySQL 配置
+```yaml
+# Primary-replica configuration
+syncMode: semi-sync   # Semi-synchronous replication
+replicas: 3          # 3 instances
+
+# ProxySQL configuration
 proxy:
   enable: true
-  replicaCount: 3    # 3 个代理实例
+  replicaCount: 3    # 3 proxy instances
   mysql-max_connections: 2048
   mysql-threads: 2
 ```
 
-#### 监控配置
+### Monitoring Profile
+
 ```yaml
-# 监控和告警
+# Monitoring and alerting
 monitor:
-  enableAlert: true         # 启用告警
-  enableExporter: true      # 启用指标收集
-  slowqueryLogging: true    # 启用慢查询日志
-  auditLogging: true        # 启用审计日志
+  enableAlert: true         # Turn on alerts
+  enableExporter: true      # Enable metrics exporter
+  slowqueryLogging: true    # Enable slow query logging
+  auditLogging: true        # Enable audit logging
 ```
 
-### 最佳实践
+## Usage Guidance
 
-#### 1. 安全配置
-- 使用强密码策略（包含大小写字母、数字和特殊字符）
-- 启用 SSL 连接加密
-- 定期更新数据库密码
-- 配置适当的访问控制规则
-- 启用审计日志记录敏感操作
+### Environment Selection
 
-#### 2. 性能优化
-- 根据负载调整 `innodb_buffer_pool_size` 参数
-- 配置合适的 `max_connections` 和连接超时参数
-- 启用慢查询日志进行性能分析
-- 使用 ProxySQL 进行连接池管理
-- 优化 InnoDB 相关参数
+#### Development and Test
+- **Recommended topology**: Standard (operator-standard)
+- **Resources**: CPU 2 cores, memory 4 Gi, storage 50 Gi
+- **Suggested version**: MySQL 8.0.39
+- **Instances**: 2 (1 primary + 1 replica)
 
-#### 3. 备份策略
-- 启用 XtraBackup 进行物理备份
-- 配置定期逻辑备份
-- 测试备份恢复流程
-- 将备份存储到安全的远程位置
-- 设置备份保留策略
+#### Production
+- **Recommended topology**: Proxy or highly available mode
+- **Resources**: CPU 4+ cores, memory 8+ Gi, storage 200+ Gi
+- **Suggested version**: MySQL 8.4.3 or 8.0.39
+- **Instances**: 3+ for high availability
 
-#### 4. 监控告警
-- 监控数据库连接数、查询性能、磁盘使用率
-- 设置关键指标告警阈值
-- 定期检查慢查询日志
-- 监控主从复制延迟
-- 监控 ProxySQL 连接池状态
+### Best Practices
 
-#### 5. 运维管理
-- 定期进行数据库维护（OPTIMIZE TABLE、ANALYZE TABLE）
-- 监控数据库大小和增长趋势
-- 制定容量规划策略
-- 建立故障处理流程
-- 定期更新数据库版本
+#### Security
+- Enforce strong passwords with mixed character classes
+- Enable SSL connection encryption
+- Rotate database credentials periodically
+- Configure appropriate access control rules
+- Enable audit logging for sensitive operations
 
-### 故障处理
+#### Performance Tuning
+- Adjust `innodb_buffer_pool_size` based on workload (recommend 70% of total memory)
+- Configure appropriate `max_connections` and timeout parameters
+- Enable slow query logging for performance analysis
+- Use ProxySQL for connection pool management
+- Optimize InnoDB-related parameters
 
-#### 常见问题
-1. **主从复制延迟**: 检查网络连接和磁盘 I/O 性能
-2. **连接数过多**: 调整 `max_connections` 或使用 ProxySQL 连接池
-3. **磁盘空间不足**: 清理日志文件或扩容存储
-4. **查询性能慢**: 分析执行计划，优化索引和查询
-5. **ProxySQL 连接失败**: 检查后端 MySQL 服务状态
+#### Backup Strategy
+- Enable XtraBackup for physical backups
+- Schedule recurring logical backups
+- Regularly test restore procedures
+- Store backups in secure remote locations
+- Define backup retention policies
 
-#### 故障恢复
-1. **主节点故障**: 自动进行故障转移，从节点提升为主节点
-2. **数据损坏**: 从备份恢复或重建从节点
-3. **网络分区**: 等待网络恢复或手动干预
-4. **ProxySQL 故障**: 重启代理服务或切换到备用代理
+#### Monitoring and Alerting
+- Track connection count, query performance, and disk usage
+- Define alert thresholds for critical metrics
+- Review slow query logs routinely
+- Monitor primary-replica replication lag
+- Watch ProxySQL connection pool status
 
-### 版本升级
+## Related Projects
 
-#### 升级策略
-- 先在测试环境验证升级流程
-- 制定详细的升级计划和回滚方案
-- 在业务低峰期进行升级
-- 升级后进行全面测试
+| Project | Description |
+|---------|-------------|
+| [OpenSaola Operator](https://github.com/harmonycloud/opensaola) | Core Kubernetes operator for middleware lifecycle management |
+| [saola-cli](https://github.com/harmonycloud/saola-cli) | Command-line tool for middleware management |
+| [PostgreSQL](https://github.com/harmonycloud/postgresql) | PostgreSQL database package |
+| [Kafka](https://github.com/harmonycloud/kafka) | Apache Kafka streaming platform package |
+| [Redis](https://github.com/harmonycloud/redis) | Redis in-memory data store package |
+| [Elasticsearch](https://github.com/harmonycloud/elasticsearch) | Elasticsearch search engine package |
+| [ZooKeeper](https://github.com/harmonycloud/zookeeper) | Apache ZooKeeper coordination service package |
+| [RabbitMQ](https://github.com/harmonycloud/rabbitmq) | RabbitMQ message broker package |
 
-#### 升级步骤
-1. 备份当前数据库
-2. 升级 MySQL Operator
-3. 更新数据库版本配置
-4. 执行滚动升级
-5. 验证升级结果
-6. 更新 ProxySQL 配置（如需要）
+## License
 
-### 性能调优建议
-
-#### MySQL 参数优化
-```yaml
-# 关键性能参数
-innodb_buffer_pool_size: "70% of total memory"
-max_connections: 1000
-innodb_log_file_size: "256MB"
-innodb_flush_log_at_trx_commit: 2
-query_cache_type: 1
-query_cache_size: "128MB"
-```
-
-#### ProxySQL 优化
-```yaml
-# ProxySQL 性能参数
-mysql-max_connections: 2048
-mysql-threads: 4
-mysql-default_query_timeout: 36000000
-mysql-ping_interval_server_msec: 15000
-```
-
----
-
-**注意**: 在生产环境中使用前，请务必在测试环境中充分验证配置和功能。建议定期进行备份测试和故障恢复演练。
+This project is licensed under the [Apache License 2.0](LICENSE).
