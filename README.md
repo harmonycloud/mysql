@@ -1,3 +1,5 @@
+[English](README.md) | [中文](README_zh.md)
+
 # MySQL Database Service
 
 Enterprise-grade MySQL database service for Kubernetes with high availability, read-write splitting, and automatic failover.
