@@ -1,0 +1,37 @@
+apiVersion: middleware.cn/v1
+kind: MiddlewareActionBaseline
+metadata:
+  name: mysql-stop
+  annotations:
+    alias: "Stop"
+spec:
+  baselineType: "NormalAction"
+  actionType: "stop"
+  necessary: {}
+  steps:
+    - name: getBaselineName
+      output:
+        type: "string"
+        expose: true
+      cmd:
+        command:
+          - |
+            kubectl get mid {{ .Globe.MiddlewareName }} -n {{ .Globe.Namespace }} -o jsonpath='{.metadata.labels.middleware\.cn/definition}'
+    - name: stop
+      output:
+        type: "string"
+        expose: true
+      cmd:
+        command:
+          - |
+            {{- if eq .Step.getBaselineName.output "mysql-master-slave" -}}
+            kubectl patch mid {{ .Globe.MiddlewareName }} -n {{ .Globe.Namespace }} --type=merge -p '{"spec":{"necessary":{"resource":{"mysql":{"replicas":0}}}}}'
+            {{- else if eq .Step.getBaselineName.output "mysql-master-slave-active" -}}
+            kubectl patch mid {{ .Globe.MiddlewareName }} -n {{ .Globe.Namespace }} --type=merge -p '{"spec":{"necessary":{"resource":{"mysql":{"replicas":0}}}}}'
+            {{- else if eq .Step.getBaselineName.output "mysql-proxy" -}}
+            kubectl patch mid {{ .Globe.MiddlewareName }} -n {{ .Globe.Namespace }} --type=merge -p '{"spec":{"necessary":{"resource":{"mysql":{"replicas":0}}}}}'
+            {{- else if eq .Step.getBaselineName.output "mysql-proxy-active" -}}
+            kubectl patch mid {{ .Globe.MiddlewareName }} -n {{ .Globe.Namespace }} --type=merge -p '{"spec":{"necessary":{"resource":{"mysql":{"replicas":0}}}}}'
+            {{- else -}}
+            kubectl patch mid {{ .Globe.MiddlewareName }} -n {{ .Globe.Namespace }} --type=merge -p '{"spec":{"necessary":{"resource":{"mysql":{"replicas":0}}}}}'
+            {{- end -}}
