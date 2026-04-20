@@ -8,7 +8,7 @@ spec:
   baselineType: "PreAction"
   actionType: "passive-switch"
   necessary:
-    passiveSwitched: '{"type":"boolean","label":"Automatic switch","required":true,"default":false,"visible":true}'
+    passiveSwitched: '{"type":"boolean","label":"Automatic switch","required":true,"default":true,"visible":true}'
   steps:
     - name: passive-switch
       type: "KubectlEdit" # KubectlGet、KubectlEdit、KubectlExec、Exec、HTTP
