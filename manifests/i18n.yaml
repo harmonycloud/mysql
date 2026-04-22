@@ -94,7 +94,7 @@ actionAliasName:
   - name: "MasterSlaveSwitchover"
     name-zh: "主从切换"
   - name: "Automatic switch"
-    name-zh: "自动切换"
+    name-zh: "自动主从切换"
   - name: "Middleware Restart"
     name-zh: "服务重启"
   - name: "NodeMigration"
