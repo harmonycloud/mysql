@@ -131,7 +131,7 @@ spec:
       exposed: true
     - name: pre-mysql-passive-switch
       parameters:
-        passiveSwitched: false
+        passiveSwitched: true
   parameters:
     proxy:
       enable: true
