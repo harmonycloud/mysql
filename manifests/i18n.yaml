@@ -82,7 +82,7 @@ label:
   - name: "Turn off automatic switching?"
     name-zh: "是否关闭自动切换"
   - name: "Automatic switch"
-    name-zh: "自动切换"
+    name-zh: "自动主从切换"
 
   - name: "Character Set"
     name-zh: "字符集"
