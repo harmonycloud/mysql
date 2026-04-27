@@ -19,7 +19,11 @@ spec:
         parameters: {
           spec: {
             parameters: {
-              passiveSwitched: {{ .Necessary.passiveSwitched }}
+              {{- if eq .Necessary.passiveSwitched false -}}
+              passiveSwitched: true
+              {{- else -}}
+              passiveSwitched: false
+              {{- end -}}
             }
           }
           resource: {
