@@ -62,14 +62,14 @@ spec:
         "description": "Please select the collation server",
         "placeholder": "Please select the collation server",
         "default": "utf8mb4_general_ci",
-        "options": "utf8mb4_general_ci", "utf8mb4_bin", "utf8mb4_unicode_520_ci", "utf8mb4_unicode_ci",
+        "options": "utf8mb4_general_ci, utf8mb4_bin, utf8mb4_unicode_520_ci, utf8mb4_unicode_ci",
         "dependencies": [
           {
             "field": "version",
             "fieldRule": "regex",
             "fieldValue": "^5\\.",
             "override": {
-              "options": ["utf8mb4_general_ci", "utf8mb4_bin", "utf8mb4_unicode_520_ci", "utf8mb4_unicode_ci"],
+              "options": "utf8mb4_general_ci,utf8mb4_bin,utf8mb4_unicode_520_ci,utf8mb4_unicode_ci",
               "default": "utf8mb4_general_ci"
             }
           },
@@ -78,16 +78,8 @@ spec:
             "fieldRule": "regex",
             "fieldValue": "^8\\.",
             "override": {
-              "options": [
-                "utf8mb4_0900_ai_ci",
-                "utf8mb4_0900_as_ci", 
-                "utf8mb4_0900_as_cs",
-                "utf8mb4_0900_bin",
-                "utf8mb4_bin",
-                "utf8mb4_general_ci",
-                "utf8mb4_unicode_520_ci",
-                "utf8mb4_unicode_ci"
-              ],
+              "options":
+                "utf8mb4_0900_ai_ci,utf8mb4_0900_as_ci, utf8mb4_0900_as_cs,utf8mb4_0900_bin,utf8mb4_bin,utf8mb4_general_ci,utf8mb4_unicode_520_ci,utf8mb4_unicode_ci",
               "default": "utf8mb4_0900_ai_ci"
             }
           }
