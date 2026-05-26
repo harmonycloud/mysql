@@ -152,7 +152,7 @@ spec:
         fsGroup: 0
       image:
         repository: "{{ .Necessary.repository }}/proxysql"
-        tag: "2.5.2-1.0.0"
+        tag: '{{ if eq (regexFind "5.7|8.0|8.4" .Necessary.version) "8.4" }}b1ae32ff{{ else }}2.5.2-1.0.0{{ end }}'
         pullPolicy: "IfNotPresent"
       args:
         # MySQL Variables

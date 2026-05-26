@@ -206,7 +206,7 @@ spec:
                 - name: aliyun_logs_middlewarestdout_tags
                   value: "middleware_name={{ .Globe.Name }}"
                 - name: TOOLBOOX_IMAGE
-                  value: '{{ if ne .Globe.repository "" }}{{ .Globe.repository }}/{{ end }}{{ .Globe.project }}/mysql-toolbox:v1.1.0'
+                  value: '{{ if ne .Globe.repository "" }}{{ .Globe.repository }}/{{ end }}{{ .Globe.project }}/mysql-toolbox:v1.2.0'
               ports:
                 - name: http
                   containerPort: 8080
@@ -253,4 +253,3 @@ spec:
       values: {}
     - name: "mysql-operator-dashboard"
       values: {}
-
