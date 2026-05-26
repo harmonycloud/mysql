@@ -68,7 +68,7 @@ spec:
         "description": "Please select the collation server",
         "placeholder": "Please select the collation server",
         "default": "utf8mb4_general_ci",
-        "options": ["utf8mb4_general_ci", "utf8mb4_bin", "utf8mb4_unicode_520_ci", "utf8mb4_unicode_ci"],
+        "options": "utf8mb4_general_ci", "utf8mb4_bin", "utf8mb4_unicode_520_ci", "utf8mb4_unicode_ci",
         "dependencies": [
           {
             "field": "version",
