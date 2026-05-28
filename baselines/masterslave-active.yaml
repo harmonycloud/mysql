@@ -54,13 +54,25 @@ spec:
       exposed: true
     - name: pre-mysql-affinity
       parameters:
-        podAntiAffinityTopologKey: "kubernetes.io/hostname"
-        podAntiAffinity: "soft"
-        nodeAffinity: { }
+        podAntiAffinityTopologKey: "topology.kubernetes.io/zone"
+        podAntiAffinity: "hard"
+        disableHostnameTopologySpread: true
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: topology.kubernetes.io/zone
+                    operator: NotIn
+                    values:
+                      - zoneC
       exposed: true
     - name: pre-mysql-tolerations
       parameters:
-        tolerations: [ ]
+        tolerations:
+          - effect: NoSchedule
+            key: harm.cn/type
+            operator: Equal
+            value: active-active
       fixed: false
       exposed: true
   parameters:
@@ -68,33 +80,6 @@ spec:
       spec:
         template:
           spec:
-            affinity:
-              nodeAffinity:
-                requiredDuringSchedulingIgnoredDuringExecution:
-                  nodeSelectorTerms:
-                    - matchExpressions:
-                        - key: topology.kubernetes.io/zone
-                          operator: NotIn
-                          values:
-                            - zoneC
-            tolerations:
-              - effect: NoSchedule
-                key: harm.cn/type
-                operator: Equal
-                value: active-active
-            topologySpreadConstraints:
-              - maxSkew: 1
-                topologyKey: topology.kubernetes.io/zone
-                whenUnsatisfiable: DoNotSchedule
-                labelSelector:
-                  matchLabels:
-                    app: "{{ .Globe.Name }}"
-              - maxSkew: 1
-                topologyKey: "kubernetes.io/hostname"
-                whenUnsatisfiable: DoNotSchedule
-                labelSelector:
-                  matchLabels:
-                    app: "{{ .Globe.Name }}"
             securityContext:
               fsGroup: 0
     clusterSwitch:

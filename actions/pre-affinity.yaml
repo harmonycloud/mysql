@@ -9,6 +9,7 @@ spec:
     podAntiAffinityTopologKey: ""
     podAntiAffinity: ""
     nodeAffinity: { }
+    disableHostnameTopologySpread: false
   steps:
     - name: affinity
       type: "KubectlEdit" # KubectlGet、KubectlEdit、KubectlExec、Exec、HTTP
@@ -136,6 +137,7 @@ spec:
                           }
                         },
                       {{- end }}
+                      {{- if not .Necessary.disableHostnameTopologySpread }}
                         {
                           maxSkew: 1
                           topologyKey: "kubernetes.io/hostname"
@@ -150,6 +152,7 @@ spec:
                             }
                           }
                         },
+                      {{- end }}
                       ]
                     {{- if .Necessary.nodeAffinity }}
                       affinity: {
@@ -229,6 +232,7 @@ spec:
                     }
                   },
                 {{- end }}
+                {{- if not .Necessary.disableHostnameTopologySpread }}
                   {
                     maxSkew: 1
                     topologyKey: "kubernetes.io/hostname"
@@ -243,6 +247,7 @@ spec:
                       }
                     }
                   },
+                {{- end }}
                 ]
               {{- if .Necessary.nodeAffinity }}
                 affinity: {
