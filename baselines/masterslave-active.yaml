@@ -5,7 +5,7 @@ metadata:
   annotations:
     baselineName: "Master-Slave mode A-A"
     description: "Master-Slave Mode Baseline, incorporating core functionality and essential dependencies, is tailored for rapid deployment and fundamental application scenarios. It delivers stable and reliable performance, and is designed for ease of extension and maintenance."
-    active: "2"
+    active: "3"
 spec:
   operatorBaseline:
     name: mysql-operator-standard
@@ -112,13 +112,25 @@ spec:
       exposed: true
     - name: pre-mysql-affinity
       parameters:
-        podAntiAffinityTopologKey: "kubernetes.io/hostname"
-        podAntiAffinity: "soft"
-        nodeAffinity: { }
+        podAntiAffinityTopologKey: "topology.kubernetes.io/zone"
+        podAntiAffinity: "hard"
+        disableHostnameTopologySpread: true
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: topology.kubernetes.io/zone
+                    operator: NotIn
+                    values:
+                      - zoneC
       exposed: true
     - name: pre-mysql-tolerations
       parameters:
-        tolerations: [ ]
+        tolerations:
+          - effect: NoSchedule
+            key: harm.cn/type
+            operator: Equal
+            value: active-active
       fixed: false
       exposed: true
     - name: pre-mysql-passive-switch
@@ -129,13 +141,6 @@ spec:
       spec:
         template:
           spec:
-            topologySpreadConstraints:
-              - maxSkew: 1
-                topologyKey: "kubernetes.io/hostname"
-                whenUnsatisfiable: ScheduleAnyway
-                labelSelector:
-                  matchLabels:
-                    app: "{{ .Globe.Name }}"
             securityContext:
               fsGroup: 0
     clusterSwitch:
