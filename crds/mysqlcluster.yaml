@@ -23,6 +23,9 @@ spec:
               type: object
               x-kubernetes-preserve-unknown-fields: true
           additionalPrinterColumns:
+          - name: type
+            type: string
+            jsonPath: .spec.type
           - name: phase
             type: string
             jsonPath: .status.phase

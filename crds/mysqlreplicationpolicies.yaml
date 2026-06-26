@@ -1,0 +1,134 @@
+apiVersion: middleware.cn/v1
+kind: MiddlewareConfiguration
+metadata:
+  name: crd-mysqlreplicationpolicies
+spec:
+  template: |
+    apiVersion: apiextensions.k8s.io/v1
+    kind: CustomResourceDefinition
+    metadata:
+      annotations:
+        controller-gen.kubebuilder.io/version: v0.16.4
+      name: mysqlreplicationpolicies.mysql.middleware.harmonycloud.cn
+    spec:
+      group: mysql.middleware.harmonycloud.cn
+      names:
+        kind: MysqlReplicationPolicy
+        listKind: MysqlReplicationPolicyList
+        plural: mysqlreplicationpolicies
+        shortNames:
+          - mrp
+        singular: mysqlreplicationpolicy
+      scope: Namespaced
+      versions:
+        - additionalPrinterColumns:
+            - description: Spec enable switch
+              jsonPath: .spec.enable
+              name: Enable
+              type: boolean
+            - description: Current status phase
+              jsonPath: .status.phase
+              name: Phase
+              type: string
+            - description: Current status operate Phase
+              jsonPath: .status.operatePhase
+              name: OperatePhase
+              type: string
+          name: v1alpha1
+          schema:
+            openAPIV3Schema:
+              properties:
+                apiVersion:
+                  description: |-
+                    APIVersion defines the versioned schema of this representation of an object.
+                    Servers should convert recognized schemas to the latest internal value, and
+                    may reject unrecognized values.
+                    More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+                  type: string
+                kind:
+                  description: |-
+                    Kind is a string value representing the REST resource this object represents.
+                    Servers may infer this from the endpoint the client submits requests to.
+                    Cannot be updated.
+                    In CamelCase.
+                    More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
+                  type: string
+                metadata:
+                  type: object
+                spec:
+                  properties:
+                    config:
+                      properties:
+                        source:
+                          properties:
+                            address:
+                              type: string
+                            clusterName:
+                              type: string
+                            clusterNamespace:
+                              type: string
+                            password:
+                              type: string
+                            type:
+                              type: string
+                            user:
+                              type: string
+                          type: object
+                        target:
+                          description: target/source 字段不强制必填，避免 CRD required 校验阻塞创建。
+                          properties:
+                            address:
+                              type: string
+                            clusterName:
+                              type: string
+                            clusterNamespace:
+                              type: string
+                            password:
+                              type: string
+                            type:
+                              type: string
+                            user:
+                              type: string
+                          type: object
+                      type: object
+                    enable:
+                      type: boolean
+                  type: object
+                status:
+                  properties:
+                    conditions:
+                      items:
+                        properties:
+                          createTime:
+                            type: string
+                          details:
+                            additionalProperties:
+                              additionalProperties:
+                                type: string
+                              type: object
+                            type: object
+                          lastSuccessTime:
+                            type: string
+                          lastUpdateTime:
+                            type: string
+                          phase:
+                            description: 集群当前阶段
+                            type: string
+                          podName:
+                            type: string
+                          reason:
+                            type: string
+                        type: object
+                      type: array
+                    operatePhase:
+                      type: string
+                    phase:
+                      type: string
+                    reason:
+                      type: string
+                  type: object
+              type: object
+          served: true
+          storage: true
+          subresources:
+            status: {}

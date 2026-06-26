@@ -1,5 +1,5 @@
 name: MySQL # 中间件类型
-version: 1.15.3-beta.2-1.0.0
+version: 1.15.3-beta.5-1.0.0
 app:
   version: # 中间件支持版本
     - "8.4.3"
@@ -44,3 +44,7 @@ changes: |
                 更新mysql-toolbox镜像兼容8.4.3版本
                 更新proxysql镜像兼容8.4版本
     2026.05.28: 支持齐商双活可用区调度配置
+  1.15.3-beta.5-1.0.0
+    2026.06.25: operator断网后，主库和从库都不可用问题
+                为 MySQL CRD 添加 resources 和 status.conditions 属性验证
+                mysql 容灾更改为replicator 形式
