@@ -126,11 +126,7 @@ spec:
       exposed: true
     - name: pre-mysql-tolerations
       parameters:
-        tolerations:
-          - effect: NoSchedule
-            key: harm.cn/type
-            operator: Equal
-            value: active-active
+        tolerations: []
       fixed: false
       exposed: true
     - name: pre-mysql-passive-switch
