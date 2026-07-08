@@ -247,6 +247,8 @@ spec:
       values: {}
     - name: "crd-mysqlcluster"
       values: {}
+    - name: "crd-mysqlreplicates"
+      values: {}
     - name: "crd-mysqlreplicationpolicies"
       values: {}
     - name: "mysql-operator-alertrule"
