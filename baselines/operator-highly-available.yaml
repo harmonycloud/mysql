@@ -185,7 +185,7 @@ spec:
             - name: mysql-operator
               securityContext:
                 { }
-              image: '{{ if ne .Globe.repository "" }}{{ .Globe.repository }}/{{ end }}{{ .Globe.project }}/mysql-operator:14241d07'
+              image: '{{ if ne .Globe.repository "" }}{{ .Globe.repository }}/{{ end }}{{ .Globe.project }}/mysql-operator:ac07b821'
               command:
                 - /manager
                 - --v=5
