@@ -29,10 +29,10 @@ spec:
                 name: "mysql-logcollectionrule"
                 values: {
                   logging: {
-                    fileLogging: {{ .Necessary.fileLogging }}
-                    stdoutLogging: {{ .Necessary.stdoutLogging }}
-                    auditLogging: {{ .Necessary.auditLogging }}
-                    slowqueryLogging: {{ .Necessary.slowqueryLogging }}
+                    fileLogging: {{ if hasKey .Necessary "fileLogging" }}{{ .Necessary.fileLogging }}{{ else }}false{{ end }}
+                    stdoutLogging: {{ if hasKey .Necessary "stdoutLogging" }}{{ .Necessary.stdoutLogging }}{{ else }}false{{ end }}
+                    auditLogging: {{ if hasKey .Necessary "auditLogging" }}{{ .Necessary.auditLogging }}{{ else }}false{{ end }}
+                    slowqueryLogging: {{ if hasKey .Necessary "slowqueryLogging" }}{{ .Necessary.slowqueryLogging }}{{ else }}false{{ end }}
                   }
                 }
               },
@@ -41,7 +41,7 @@ spec:
                 values: {
                   features: {
                     auditLog: {
-                      enabled: {{ .Necessary.auditLogging }}
+                      enabled: {{ if hasKey .Necessary "auditLogging" }}{{ .Necessary.auditLogging }}{{ else }}false{{ end }}
                     }
                   }
                 }
