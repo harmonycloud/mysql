@@ -1,0 +1,97 @@
+apiVersion: middleware.cn/v1
+kind: MiddlewareConfiguration
+metadata:
+  name: mysql-logcollectionrule
+spec:
+  template: |
+    apiVersion: logcollector.harmonycloud.cn/v1alpha1
+    kind: LogCollectionRule
+    metadata:
+      name: {{ .Globe.Name }}-log-rule
+      namespace: {{ .Globe.Namespace }}
+    spec:
+      collectors:
+        - enable: {{ .Values.logging.stdoutLogging | default false }}
+          matchLabels:
+            app: {{ .Globe.Name }}
+            operatorname: mysql-operator
+          containerRule:
+            - containers:
+                - mysql
+              rules:
+                - stdout: true
+                  fields:
+                    middleware_name: {{ .Globe.Name }}
+                    log_type: stdout
+                  tags:
+                    - middleware_name={{ .Globe.Name }}
+                    - log_type=stdout
+                  elasticsearch:
+                    index: middlewarestdout
+                  kafka:
+                    topic: middlewarestdout
+
+        - enable: {{ .Values.logging.fileLogging | default false }}
+          matchLabels:
+            app: {{ .Globe.Name }}
+            operatorname: mysql-operator
+          containerRule:
+            - containers:
+                - mysql
+              rules:
+                - path:
+                    - /data/mysql/db_{{ .Globe.Name }}/elog/*.err
+                  fields:
+                    middleware_name: {{ .Globe.Name }}
+                    log_type: error
+                  tags:
+                    - middleware_name={{ .Globe.Name }}
+                    - log_type=error
+                  elasticsearch:
+                    index: middlewarelogstash
+                  kafka:
+                    topic: middlewarelogstash
+
+        - enable: {{ .Values.logging.slowqueryLogging | default false }}
+          matchLabels:
+            app: {{ .Globe.Name }}
+            operatorname: mysql-operator
+          containerRule:
+            - containers:
+                - mysql
+              rules:
+                - path:
+                    - /data/mysql/db_{{ .Globe.Name }}/elog/slow.log
+                  fields:
+                    middleware_name: {{ .Globe.Name }}
+                    log_type: slow
+                    format: mysql_slow_log
+                  tags:
+                    - middleware_name={{ .Globe.Name }}
+                    - log_type=slow
+                  elasticsearch:
+                    index: mysqlslow
+                  kafka:
+                    topic: mysqlslow
+
+        - enable: {{ .Values.logging.auditLogging | default false }}
+          matchLabels:
+            app: {{ .Globe.Name }}
+            operatorname: mysql-operator
+          containerRule:
+            - containers:
+                - mysql
+              rules:
+                - path:
+                    - /data/mysql/db_{{ .Globe.Name }}/elog/mysql-audit.json
+                  fields:
+                    middleware_name: {{ .Globe.Name }}
+                    log_type: audit
+                    format: json
+                  tags:
+                    - middleware_name={{ .Globe.Name }}
+                    - log_type=audit
+                  elasticsearch:
+                    index: mysqlaudit
+                  kafka:
+                    topic: mysqlaudit

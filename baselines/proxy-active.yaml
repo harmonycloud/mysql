@@ -110,7 +110,7 @@ spec:
       parameters:
         labels: {}
       exposed: false
-    - name: pre-mysql-logging
+    - name: pre-mysql-logging-rule
       parameters:
         fileLogging: true
         stdoutLogging: true
@@ -423,6 +423,13 @@ spec:
       values:
         proxy:
           enable: true
+    - name: mysql-logcollectionrule
+      values:
+        logging:
+          fileLogging: true
+          stdoutLogging: true
+          auditLogging: false
+          slowqueryLogging: true
     - name: mysql-config
       values:
         version: "{{ .Parameters.version }}"

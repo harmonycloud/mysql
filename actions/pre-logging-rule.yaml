@@ -1,0 +1,57 @@
+apiVersion: middleware.cn/v1
+kind: MiddlewareActionBaseline
+metadata:
+  name: pre-mysql-logging-rule
+spec:
+  baselineType: "PreAction"
+  actionType: "pre-logging"
+  necessary:
+    fileLogging: "bool"
+    stdoutLogging: "bool"
+    auditLogging: "bool"
+    slowqueryLogging: "bool"
+  steps:
+    - name: logging
+      type: "KubectlEdit" # KubectlGet、KubectlEdit、KubectlExec、Exec、HTTP
+      cue: |
+        output: {
+          spec: parameters.spec
+        }
+        parameters: {
+          spec: {
+            parameters: {
+              statefulset: {
+                env: []
+              }
+            }
+            configurations: [
+              {
+                name: "mysql-logcollectionrule"
+                values: {
+                  logging: {
+                    fileLogging: {{ .Necessary.fileLogging }}
+                    stdoutLogging: {{ .Necessary.stdoutLogging }}
+                    auditLogging: {{ .Necessary.auditLogging }}
+                    slowqueryLogging: {{ .Necessary.slowqueryLogging }}
+                  }
+                }
+              },
+              {
+                name: "mysql-config"
+                values: {
+                  features: {
+                    auditLog: {
+                      enabled: {{ .Necessary.auditLogging }}
+                    }
+                  }
+                }
+              },
+            ]
+          }
+          resource: {
+            apiversion: "middleware.cn/v1"
+            kind: "Middleware"
+            name: "{{ .Globe.Name }}"
+            namespace: "{{ .Globe.Namespace }}"
+          }
+        }

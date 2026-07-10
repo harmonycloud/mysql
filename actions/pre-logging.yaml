@@ -4,7 +4,7 @@ metadata:
   name: pre-mysql-logging
 spec:
   baselineType: "PreAction"
-  actionType: "pre-logging"
+  actionType: "pre-logging1"
   necessary:
     fileLogging: "bool"
     stdoutLogging: "bool"
